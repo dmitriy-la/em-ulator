@@ -1,0 +1,26 @@
+[
+    {
+        "msgTitle": "test_status_req",
+        "msgHex": "0012 10 xxxx 0000 FFFF FFFF 0007 000000 xxxxxxxx"
+    },
+    {
+        "msgTitle": "response_ZEROED",
+        "msgHex": "0011 25 0000 00000000 000 00000000 00000000"
+    },
+    {
+        "msgTitle": "response_all_4",
+        "msgHex": "0011 25 xxxx 44444444 4444 00000004 xxxxxxxx"
+    },
+    {
+        "msgTitle": "trigger2_bbbb",
+        "msgHex": "000F 24 xxxx 0000 00000000 BBBB xxxxxxxx"
+    },
+    {
+        "msgTitle": "11111111",
+        "msgHex": "000F 24 0000 0000 00000000 00 00000000"
+    },
+    {
+        "msgTitle": "trigger1_WITH_UNDEF",
+        "msgHex": "0018 21 xxxx ABCDFFFF 0000 112233FFFF 00000000 0000 xxxxxxxx"
+    }
+]

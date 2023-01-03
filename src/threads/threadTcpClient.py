@@ -1,0 +1,101 @@
+import gettext
+import socket
+import os
+
+from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
+
+import threads.threadTimer
+import threads.threadNetworkBase
+
+_ = gettext.gettext
+
+
+class ThreadTcpClient(threads.threadNetworkBase.ThreadNetworkBase):
+    signalSetStateLabelNorm = pyqtSignal(str)
+    signalSetStateLabelError = pyqtSignal(str, str)
+
+    def __init__(self, datalineSettings: dict, parent=None):
+        threads.threadNetworkBase.ThreadNetworkBase.__init__(self, datalineSettings, parent)
+        # self.parent = parent
+
+
+    def initSockets(self) -> None:
+        self.recvSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
+        self.recvSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.recvSocket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+
+        self.sendSocket = self.recvSocket
+
+
+    def closeSockets(self) -> None:
+        self.recvSocket.close()
+
+
+    def run(self):
+        self.initSockets()
+
+        while self.parent.running:
+            self.msleep(1)
+            if self.connected:
+                self.sendMsgIfNeeded()
+
+                self.receiveAndProcessMsg()
+            else:
+                self.connectingToServer(self.sendAddress)
+        else:
+            self.receiptDelayTimersList.clear()
+
+
+    def connectingToServer(self, address: tuple) -> None:
+        print("Connecting", address)
+
+        while self.parent.running and not self.connected:
+            try:
+                self.closeSockets()
+                self.initSockets()
+                self.attemptConnectToServer(address)
+            except socket.error as e:
+                errorStr = os.strerror(e.errno)
+                errorStr += _(" error")
+                self.processConnectError(_('ERR'), errorStr)
+                print("Connect error: ", errorStr)
+            self.msleep(1000)
+
+        print("Stop connect attempts.")
+
+
+    def attemptConnectToServer(self, address) -> None:
+        self.recvSocket.bind(self.ownAddress)
+        errno = self.recvSocket.connect_ex(address)
+
+        if errno == 0 or errno == 10056:
+            print("Connect success!")
+            self.processConnectSuccess()
+
+
+    def processConnectSuccess(self) -> None:
+        self.recvSocket.setblocking(False)
+
+        self.connected = True
+
+        self.signalSetStateLabelNorm.emit(_('Norm'))
+
+
+    def processConnectError(self, stateStrShort: str, stateStrFull='') -> None:
+        self.connected = False
+
+        if not "Connect error" in stateStrFull:
+            self.parent.addMsgToLogger('', stateStrFull + _(' in'))
+
+        self.signalSetStateLabelError.emit(stateStrShort, stateStrFull)
+
+        print("stateStrFull", stateStrFull)
+
+
+    @pyqtSlot(str)
+    def processToutAwaitingReceipt(self, msg: str) -> None:
+        self.parent.addMsgToLogger(msg, _('send failed (receipt timeout) from'))
+        self.msgToBeSentList.clear()
+
+        print("Restarting connection.")
+        self.connected = False

@@ -1,0 +1,26 @@
+[
+    {
+        "title": "serv",
+        "protocolType": "TCP-server",
+        "ipOwn": "127.0.0.1",
+        "portOwn": 2048,
+        "ipSend": "127.0.0.1",
+        "portSend": 2050,
+        "toutMs": 3000,
+        "repeats": 2,
+        "delay": 100,
+        "sendMode": "send to all clients"
+    },
+    {
+        "title": "cli_1",
+        "protocolType": "TCP-client",
+        "ipOwn": "127.0.0.1",
+        "portOwn": 2050,
+        "ipSend": "127.0.0.1",
+        "portSend": 2048,
+        "toutMs": 3000,
+        "repeats": 2,
+        "delay": 100,
+        "sendMode": "send to all clients"
+    }
+]

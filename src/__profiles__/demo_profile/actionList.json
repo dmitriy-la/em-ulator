@@ -1,0 +1,9 @@
+[
+    {
+        "actionTitle": "Send DATA with two zeroed bytes",
+        "actionType": "actionTypeRespondWithFewNamedMsg",
+        "listOfMsgToRespondWith": [
+            "2 bytes of zeroed DATA"
+        ]
+    }
+]

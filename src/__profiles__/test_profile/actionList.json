@@ -1,0 +1,49 @@
+[
+    {
+        "actionTitle": "send test status req",
+        "actionType": "actionTypeRespondWithNamedMsg",
+        "listOfMsgToRespondWith": [
+            "test_status_req"
+        ]
+    },
+    {
+        "actionTitle": "assign READY to received msg and send",
+        "actionType": "actionTypeRespondWithReceivedMsgWithAssigningFields",
+        "listOfFieldTitlesAndValuesToReplaceWhenRespondingWithReceivedMsg": [
+            {
+                "fieldTitle": "test_status",
+                "fieldValue": "000A"
+            }
+        ]
+    },
+    {
+        "actionTitle": "send 2 responses",
+        "actionType": "actionTypeRespondWithFewNamedMsg",
+        "listOfMsgToRespondWith": [
+            "response_ZEROED",
+            "response_all_4"
+        ]
+    },
+    {
+        "actionTitle": "send trigger 2 bbbb",
+        "actionType": "actionTypeRespondWithNamedMsg",
+        "listOfMsgToRespondWith": [
+            "trigger2_bbbb"
+        ]
+    },
+    {
+        "actionTitle": "switch to initMode",
+        "actionType": "actionTypeChangeMode",
+        "newMode": "initMode"
+    },
+    {
+        "actionTitle": "switch to workMode",
+        "actionType": "actionTypeChangeMode",
+        "newMode": "workMode"
+    },
+    {
+        "actionTitle": "switch to altWorkMode",
+        "actionType": "actionTypeChangeMode",
+        "newMode": "altWorkMode"
+    }
+]

@@ -1,0 +1,10 @@
+[
+    {
+        "condTitle": "Two DATA messages received",
+        "condType": "condTypeReceivedFewMsg",
+        "condRegexpTitlesList": [
+            "Any DATA message",
+            "Specific DATA message"
+        ]
+    }
+]

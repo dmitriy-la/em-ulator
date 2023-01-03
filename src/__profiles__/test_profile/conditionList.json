@@ -1,0 +1,46 @@
+[
+    {
+        "condTitle": "3 sec aftr strt",
+        "condType": "condTypeTimePassedAfterStart",
+        "condTimeMs": 3000
+    },
+    {
+        "condTitle": "received test msg status request",
+        "condType": "condTypeReceivedSingleMsg",
+        "condRegexpTitlesList": [
+            "test_msg_status_req"
+        ]
+    },
+    {
+        "condTitle": "received reset to init msg",
+        "condType": "condTypeReceivedSingleMsg",
+        "condRegexpTitlesList": [
+            "reset_to_init_msg"
+        ]
+    },
+    {
+        "condTitle": "recv 3 triggers",
+        "condType": "condTypeReceivedFewMsg",
+        "condRegexpTitlesList": [
+            "any_trigger1",
+            "trgr2_1111",
+            "trgr2_cccc"
+        ]
+    },
+    {
+        "condTitle": "5 secs after sending test status req",
+        "condType": "condTypeTimePassedAfterSendMsg",
+        "condTimeMs": 5000,
+        "condRegexpTitlesList": [
+            "test_status_req"
+        ]
+    },
+    {
+        "condTitle": "3s after any recv any trigger1",
+        "condType": "condTypeTimePassedAfterReceivingMsg",
+        "condTimeMs": 3000,
+        "condRegexpTitlesList": [
+            "any_trigger1"
+        ]
+    }
+]

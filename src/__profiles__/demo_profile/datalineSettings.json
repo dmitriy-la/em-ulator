@@ -1,0 +1,38 @@
+[
+    {
+        "title": "SERV",
+        "protocolType": "TCP-server",
+        "ipOwn": "127.0.0.1",
+        "portOwn": 2048,
+        "ipSend": "127.0.0.1",
+        "portSend": 2050,
+        "toutMs": 5000,
+        "repeats": 2,
+        "delay": 0,
+        "sendMode": "send to one client, switch between clients on tout"
+    },
+    {
+        "title": "cl 1",
+        "protocolType": "TCP-client",
+        "ipOwn": "127.0.0.1",
+        "portOwn": 2050,
+        "ipSend": "127.0.0.1",
+        "portSend": 2048,
+        "toutMs": 5000,
+        "repeats": 2,
+        "delay": 500,
+        "sendMode": "send to all clients"
+    },
+    {
+        "title": "cl 2",
+        "protocolType": "TCP-client",
+        "ipOwn": "127.0.0.1",
+        "portOwn": 2051,
+        "ipSend": "127.0.0.1",
+        "portSend": 2048,
+        "toutMs": 5000,
+        "repeats": 2,
+        "delay": 500,
+        "sendMode": "send to all clients"
+    }
+]

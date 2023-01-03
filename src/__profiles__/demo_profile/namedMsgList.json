@@ -1,0 +1,10 @@
+[
+    {
+        "msgTitle": "DATA SOME_DATA",
+        "msgHex": "0D 02 xxxx 0D44F0F68568 xxxxxxxx"
+    },
+    {
+        "msgTitle": "2 bytes of zeroed DATA",
+        "msgHex": "09 02 xxxx 0000 xxxxxxxx"
+    }
+]

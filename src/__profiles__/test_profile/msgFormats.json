@@ -1,0 +1,714 @@
+[
+    {
+        "msgTypeTitle": "work_mode_trigger_2",
+        "isReceipt": false,
+        "sendAllowed": true,
+        "firstFieldTitleInGroup": "",
+        "lastFieldTitleInGroup": "",
+        "separator": "",
+        "fieldExcludedFromLenCount": "Length",
+        "fieldDescrsList": [
+            {
+                "fieldTitle": "Length",
+                "fieldLength": "16",
+                "fieldRole": "roleLength",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "Type",
+                "fieldLength": "8",
+                "fieldRole": "roleType",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "24",
+                        "valueMeaning": "TriggerType2"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "id",
+                "fieldLength": "16",
+                "fieldRole": "roleId",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_3bit",
+                "fieldLength": "5",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_2bit",
+                "fieldLength": "5",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_11bit",
+                "fieldLength": "6",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "0",
+                        "valueMeaning": "V1"
+                    },
+                    {
+                        "valueHex": "1",
+                        "valueMeaning": "v2"
+                    },
+                    {
+                        "valueHex": "2",
+                        "valueMeaning": "v3"
+                    },
+                    {
+                        "valueHex": "3",
+                        "valueMeaning": "v4"
+                    },
+                    {
+                        "valueHex": "4",
+                        "valueMeaning": "v5"
+                    },
+                    {
+                        "valueHex": "5",
+                        "valueMeaning": "v6"
+                    },
+                    {
+                        "valueHex": "6",
+                        "valueMeaning": "v7"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "data_32bit",
+                "fieldLength": "32",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": true,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_2byte",
+                "fieldLength": "16",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "crc",
+                "fieldLength": "32",
+                "fieldRole": "roleCrc",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            }
+        ]
+    },
+    {
+        "msgTypeTitle": "work_mode_response_to_trigger",
+        "isReceipt": false,
+        "sendAllowed": true,
+        "firstFieldTitleInGroup": "",
+        "lastFieldTitleInGroup": "",
+        "separator": "",
+        "fieldExcludedFromLenCount": "Length",
+        "fieldDescrsList": [
+            {
+                "fieldTitle": "Length",
+                "fieldLength": "16",
+                "fieldRole": "roleLength",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "Type",
+                "fieldLength": "8",
+                "fieldRole": "roleType",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "25",
+                        "valueMeaning": "ResponseMsg"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "id",
+                "fieldLength": "16",
+                "fieldRole": "roleId",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_32bit",
+                "fieldLength": "32",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": true,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_2byte",
+                "fieldLength": "16",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "Field",
+                "fieldLength": "32",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "0",
+                        "valueMeaning": "Meaning"
+                    },
+                    {
+                        "valueHex": "1",
+                        "valueMeaning": "Meaning"
+                    },
+                    {
+                        "valueHex": "2",
+                        "valueMeaning": "Meaning"
+                    },
+                    {
+                        "valueHex": "3",
+                        "valueMeaning": "Meaning"
+                    },
+                    {
+                        "valueHex": "4",
+                        "valueMeaning": "Meaning"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "crc",
+                "fieldLength": "32",
+                "fieldRole": "roleCrc",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            }
+        ]
+    },
+    {
+        "msgTypeTitle": "workAlt_mode_reset_to_init",
+        "isReceipt": false,
+        "sendAllowed": true,
+        "firstFieldTitleInGroup": "",
+        "lastFieldTitleInGroup": "",
+        "separator": "",
+        "fieldExcludedFromLenCount": "Length",
+        "fieldDescrsList": [
+            {
+                "fieldTitle": "Length",
+                "fieldLength": "16",
+                "fieldRole": "roleLength",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "Type",
+                "fieldLength": "8",
+                "fieldRole": "roleType",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "33",
+                        "valueMeaning": "ResetToInit"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "id",
+                "fieldLength": "16",
+                "fieldRole": "roleId",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_3bit",
+                "fieldLength": "6",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "0",
+                        "valueMeaning": "V1"
+                    },
+                    {
+                        "valueHex": "1",
+                        "valueMeaning": "v2"
+                    },
+                    {
+                        "valueHex": "2",
+                        "valueMeaning": "v3"
+                    },
+                    {
+                        "valueHex": "3",
+                        "valueMeaning": "v4"
+                    },
+                    {
+                        "valueHex": "4",
+                        "valueMeaning": "v5"
+                    },
+                    {
+                        "valueHex": "5",
+                        "valueMeaning": "v6"
+                    },
+                    {
+                        "valueHex": "6",
+                        "valueMeaning": "v7"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "data_10bit",
+                "fieldLength": "10",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "crc",
+                "fieldLength": "32",
+                "fieldRole": "roleCrc",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            }
+        ]
+    },
+    {
+        "msgTypeTitle": "work_mode_trigger_1",
+        "isReceipt": false,
+        "sendAllowed": true,
+        "firstFieldTitleInGroup": "",
+        "lastFieldTitleInGroup": "",
+        "separator": "ffff",
+        "fieldExcludedFromLenCount": "Length",
+        "fieldDescrsList": [
+            {
+                "fieldTitle": "Length",
+                "fieldLength": "16",
+                "fieldRole": "roleLength",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "Type",
+                "fieldLength": "8",
+                "fieldRole": "roleType",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "21",
+                        "valueMeaning": "TriggerType1"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "id",
+                "fieldLength": "16",
+                "fieldRole": "roleId",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_undef_len",
+                "fieldLength": "undef.",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_3bit",
+                "fieldLength": "5",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_2bit",
+                "fieldLength": "5",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_11bit",
+                "fieldLength": "6",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "0",
+                        "valueMeaning": "V1"
+                    },
+                    {
+                        "valueHex": "1",
+                        "valueMeaning": "v2"
+                    },
+                    {
+                        "valueHex": "2",
+                        "valueMeaning": "v3"
+                    },
+                    {
+                        "valueHex": "3",
+                        "valueMeaning": "v4"
+                    },
+                    {
+                        "valueHex": "4",
+                        "valueMeaning": "v5"
+                    },
+                    {
+                        "valueHex": "5",
+                        "valueMeaning": "v6"
+                    },
+                    {
+                        "valueHex": "6",
+                        "valueMeaning": "v7"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "data_undef_2",
+                "fieldLength": "undef.",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_32bit",
+                "fieldLength": "32",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": true,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_2byte",
+                "fieldLength": "16",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "crc",
+                "fieldLength": "32",
+                "fieldRole": "roleCrc",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            }
+        ]
+    },
+    {
+        "msgTypeTitle": "receipt",
+        "isReceipt": true,
+        "sendAllowed": true,
+        "firstFieldTitleInGroup": "",
+        "lastFieldTitleInGroup": "",
+        "separator": "",
+        "fieldExcludedFromLenCount": "Length",
+        "fieldDescrsList": [
+            {
+                "fieldTitle": "Length",
+                "fieldLength": "16",
+                "fieldRole": "roleLength",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "Type",
+                "fieldLength": "8",
+                "fieldRole": "roleType",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "88",
+                        "valueMeaning": "Receipt"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "id",
+                "fieldLength": "16",
+                "fieldRole": "roleId",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_3bit",
+                "fieldLength": "6",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "0",
+                        "valueMeaning": "V1"
+                    },
+                    {
+                        "valueHex": "1",
+                        "valueMeaning": "v2"
+                    },
+                    {
+                        "valueHex": "2",
+                        "valueMeaning": "v3"
+                    },
+                    {
+                        "valueHex": "3",
+                        "valueMeaning": "v4"
+                    },
+                    {
+                        "valueHex": "4",
+                        "valueMeaning": "v5"
+                    },
+                    {
+                        "valueHex": "5",
+                        "valueMeaning": "v6"
+                    },
+                    {
+                        "valueHex": "6",
+                        "valueMeaning": "v7"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "data_10bit",
+                "fieldLength": "10",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "state_field",
+                "fieldLength": "8",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "1",
+                        "valueMeaning": "st1"
+                    },
+                    {
+                        "valueHex": "2",
+                        "valueMeaning": "st2"
+                    },
+                    {
+                        "valueHex": "3",
+                        "valueMeaning": "st3"
+                    },
+                    {
+                        "valueHex": "4",
+                        "valueMeaning": "st4"
+                    },
+                    {
+                        "valueHex": "5",
+                        "valueMeaning": "st5"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "crc",
+                "fieldLength": "32",
+                "fieldRole": "roleCrc",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            }
+        ]
+    },
+    {
+        "msgTypeTitle": "init_mode_test",
+        "isReceipt": false,
+        "sendAllowed": true,
+        "firstFieldTitleInGroup": "",
+        "lastFieldTitleInGroup": "",
+        "separator": "ffff",
+        "fieldExcludedFromLenCount": "Length",
+        "fieldDescrsList": [
+            {
+                "fieldTitle": "Length",
+                "fieldLength": "16",
+                "fieldRole": "roleLength",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "Type",
+                "fieldLength": "8",
+                "fieldRole": "roleType",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "10",
+                        "valueMeaning": "Test"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "id",
+                "fieldLength": "16",
+                "fieldRole": "roleId",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_1bit",
+                "fieldLength": "1",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_2bit",
+                "fieldLength": "2",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_3bit",
+                "fieldLength": "3",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "0",
+                        "valueMeaning": "V1"
+                    },
+                    {
+                        "valueHex": "1",
+                        "valueMeaning": "v2"
+                    },
+                    {
+                        "valueHex": "2",
+                        "valueMeaning": "v3"
+                    },
+                    {
+                        "valueHex": "3",
+                        "valueMeaning": "v4"
+                    },
+                    {
+                        "valueHex": "4",
+                        "valueMeaning": "v5"
+                    },
+                    {
+                        "valueHex": "5",
+                        "valueMeaning": "v6"
+                    },
+                    {
+                        "valueHex": "6",
+                        "valueMeaning": "v7"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "data_10bit",
+                "fieldLength": "10",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": true,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_undef_len",
+                "fieldLength": "undef.",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "data_undef_2",
+                "fieldLength": "undef.",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "test_status",
+                "fieldLength": "16",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "0000",
+                        "valueMeaning": "NOT READY"
+                    },
+                    {
+                        "valueHex": "000A",
+                        "valueMeaning": "READY"
+                    },
+                    {
+                        "valueHex": "0007",
+                        "valueMeaning": "STATUS REQUEST"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "data_3byte",
+                "fieldLength": "24",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "crc",
+                "fieldLength": "32",
+                "fieldRole": "roleCrc",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            }
+        ]
+    }
+]

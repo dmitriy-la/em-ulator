@@ -1,0 +1,215 @@
+[
+    {
+        "msgTypeTitle": "STARTED",
+        "isReceipt": false,
+        "sendAllowed": true,
+        "firstFieldTitleInGroup": "",
+        "lastFieldTitleInGroup": "",
+        "separator": "",
+        "fieldExcludedFromLenCount": "LENGTH",
+        "fieldDescrsList": [
+            {
+                "fieldTitle": "LENGTH",
+                "fieldLength": "8",
+                "fieldRole": "roleLength",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "TYPE",
+                "fieldLength": "8",
+                "fieldRole": "roleType",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "1",
+                        "valueMeaning": "STARTED"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "ID",
+                "fieldLength": "16",
+                "fieldRole": "roleId",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "FIELD_1",
+                "fieldLength": "16",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "FIELD_MOOD",
+                "fieldLength": "16",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "1",
+                        "valueMeaning": "OK"
+                    },
+                    {
+                        "valueHex": "2",
+                        "valueMeaning": "GOOD"
+                    },
+                    {
+                        "valueHex": "3",
+                        "valueMeaning": "NICE"
+                    },
+                    {
+                        "valueHex": "4",
+                        "valueMeaning": "FINE"
+                    },
+                    {
+                        "valueHex": "5",
+                        "valueMeaning": "GREAT"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "CRC",
+                "fieldLength": "32",
+                "fieldRole": "roleCrc",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            }
+        ]
+    },
+    {
+        "msgTypeTitle": "DATA",
+        "isReceipt": false,
+        "sendAllowed": true,
+        "firstFieldTitleInGroup": "",
+        "lastFieldTitleInGroup": "",
+        "separator": "",
+        "fieldExcludedFromLenCount": "LENGTH",
+        "fieldDescrsList": [
+            {
+                "fieldTitle": "LENGTH",
+                "fieldLength": "8",
+                "fieldRole": "roleLength",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "TYPE",
+                "fieldLength": "8",
+                "fieldRole": "roleType",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "02",
+                        "valueMeaning": "DATA"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "ID",
+                "fieldLength": "16",
+                "fieldRole": "roleId",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "DATA",
+                "fieldLength": "undef.",
+                "fieldRole": "roleOther",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "CRC",
+                "fieldLength": "32",
+                "fieldRole": "roleCrc",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            }
+        ]
+    },
+    {
+        "msgTypeTitle": "RECEIPT",
+        "isReceipt": true,
+        "sendAllowed": true,
+        "firstFieldTitleInGroup": "",
+        "lastFieldTitleInGroup": "",
+        "separator": "",
+        "fieldExcludedFromLenCount": "LENGTH",
+        "fieldDescrsList": [
+            {
+                "fieldTitle": "LENGTH",
+                "fieldLength": "8",
+                "fieldRole": "roleLength",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "TYPE",
+                "fieldLength": "8",
+                "fieldRole": "roleType",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "88",
+                        "valueMeaning": "RECEIPT"
+                    }
+                ]
+            },
+            {
+                "fieldTitle": "ID",
+                "fieldLength": "16",
+                "fieldRole": "roleId",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            },
+            {
+                "fieldTitle": "CRC",
+                "fieldLength": "32",
+                "fieldRole": "roleCrc",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": []
+            }
+        ]
+    },
+    {
+        "msgTypeTitle": "Type 1",
+        "isReceipt": false,
+        "sendAllowed": true,
+        "firstFieldTitleInGroup": "",
+        "lastFieldTitleInGroup": "",
+        "separator": "",
+        "fieldExcludedFromLenCount": "",
+        "fieldDescrsList": [
+            {
+                "fieldTitle": "Field",
+                "fieldLength": "8",
+                "fieldRole": "roleType",
+                "fieldToBeCopiedInAutoResp": false,
+                "fieldToSwapWithInAutoresp": "",
+                "fieldValuesList": [
+                    {
+                        "valueHex": "0",
+                        "valueMeaning": "Meaning"
+                    }
+                ]
+            }
+        ]
+    }
+]

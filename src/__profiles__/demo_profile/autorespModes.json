@@ -1,0 +1,13 @@
+[
+    {
+        "modeTitle": "initMode",
+        "condList": [
+            {
+                "condTitle": "Two DATA messages received",
+                "actionsAssignedToCond": [
+                    "Send DATA with two zeroed bytes"
+                ]
+            }
+        ]
+    }
+]
