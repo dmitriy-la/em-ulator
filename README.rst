@@ -35,7 +35,6 @@ This is the app for emulating any kind of connectivity protocols over UDP/TCP la
 :Known issues:
 
 - when there are no clients connected but there is an attempt to send a message, no resending is attempted;
-- for Win 10: window parameters (position, size) for some reason reset after restart every time (but are successfully restored in Xubuntu);
 - bug when creating new message types (see docs).
 
 :Credits:
