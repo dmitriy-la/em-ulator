@@ -1,6 +1,6 @@
+from PyQt5.QtCore import QRegExp, pyqtSlot
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import QAbstractSpinBox, QLineEdit
-from PyQt5.QtCore import QRegExp, pyqtSlot
 
 
 class BigIntSpinBox(QAbstractSpinBox):

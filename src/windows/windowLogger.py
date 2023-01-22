@@ -1,19 +1,19 @@
 import gettext
 
 from PyQt5.Qt import Qt
-from PyQt5.QtCore import QPoint, QSettings, pyqtSignal, QSize, QRect, pyqtSlot
-from PyQt5.QtWidgets import QSizeGrip, QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QMainWindow
+from PyQt5.QtCore import QPoint, QRect, QSettings, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtWidgets import QHBoxLayout, QPushButton, QSizeGrip
+from PyQt5.QtWidgets import QVBoxLayout, QWidget
 
-import widgets.textEditWithClearing
-import windows.windowLoggerSettings
+import src.widgets.textEditWithClearing as textEditWithClearing
+import src.windows.windowLoggerSettings as windowLoggerSettings
 
 
 _ = gettext.gettext
 
 
 class WindowLogger(QWidget):
-# class WindowLogger(QMainWindow):
     closeAppSignal = pyqtSignal()
     _gripSize = 8
 
@@ -73,17 +73,17 @@ class WindowLogger(QWidget):
 
         self.xCoord = 33
         self.yCoord = 33
-        self.windowHeight = 600
-        self.windowWidth = 640
+        self.height = 600
+        self.width = 640
         self.readSettingsLogger()
 
         if self.xCoord is None:
             self.xCoord = 33
             self.yCoord = 33
-            self.windowHeight = 600
-            self.windowWidth = 640
+            self.height = 600
+            self.width = 640
 
-        self.setGeometry(self.xCoord, self.yCoord, self.windowWidth, self.windowHeight)
+        self.setGeometry(self.xCoord, self.yCoord, self.width, self.height)
         self.setMinimumWidth(400)
 
 
@@ -125,17 +125,18 @@ class WindowLogger(QWidget):
 
 
     def addMainTextEdit(self):
-        self.textEdit = widgets.textEditWithClearing.TextEditWithClearing(self)
+        self.textEdit = textEditWithClearing.TextEditWithClearing(self)
         self.textEdit.setReadOnly(True)
 
-        font = QFont('Consolas', 10.5, QFont.Normal)
+        font = QFont('Consolas', 11, QFont.Normal)
         self.textEdit.setFont(font)
 
         self.layout.addWidget(self.textEdit)
 
 
     def showLoggerSettings(self):
-        win = windows.windowLoggerSettings.WindowLoggerSettings(self)
+        win = windowLoggerSettings.WindowLoggerSettings(self)
+        win.exec()
 
 
     def addMsgReceived(self, msg: str):
@@ -218,8 +219,8 @@ class WindowLogger(QWidget):
         self.settings.beginGroup('/GraphicSettingsLogger')
         self.settings.setValue('/Left', int(self.x()))
         self.settings.setValue('/Right', int(self.y()))
-        self.settings.setValue('/Height', int(self.height()))
-        self.settings.setValue('/Width', int(self.width()))
+        self.settings.setValue('/Height', int(self.height))
+        self.settings.setValue('/Width', int(self.width))
         self.settings.endGroup()
 
         self.settings.endGroup()

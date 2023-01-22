@@ -2,7 +2,7 @@ import json
 
 
 class ManagerMsgFormats(object):
-    def __init__(self, profileTitle = 'default'):
+    def __init__(self, profileTitle='default'):
         self.profileTitle = profileTitle
         self.msgFormatsListFilePath = './__profiles__/' + profileTitle + '/msgFormats.json'
 
@@ -124,8 +124,9 @@ class ManagerMsgFormats(object):
             lengthOfFieldExcludedFromLenCount = 0
         else:
             titleOfFieldExcludedFromLenCount = self.getTitleOfFieldExcludedFromLenCountInMsgType(msgTypeTitle)
-            lengthOfFieldExcludedFromLenCount = self.getFieldLengthByFieldTitleInMsgType(msgTypeTitle,
-                                                                                        titleOfFieldExcludedFromLenCount)
+
+            args = [msgTypeTitle, titleOfFieldExcludedFromLenCount]
+            lengthOfFieldExcludedFromLenCount = self.getFieldLengthByFieldTitleInMsgType(*args)
 
         return lengthOfFieldExcludedFromLenCount
 
@@ -191,11 +192,14 @@ class ManagerMsgFormats(object):
         listOfTypesValues = []
 
         for msgTypeDict in self.listOfAllMsgTypeDescrs:
-            fieldDescrsList = msgTypeDict["fieldDescrsList"]
+            msgTypeTitle = msgTypeDict["msgTypeTitle"]
+            indexOfFieldWithType = self.getIndexOfFieldWithRoleTypeInMsgType(msgTypeTitle)
+            fieldDescrOfFieldWithType = msgTypeDict["fieldDescrsList"][indexOfFieldWithType]
 
-            valueOfType = [fieldDescr["fieldValuesList"][0]["valueHex"] for fieldDescr in fieldDescrsList
-                                                                              if fieldDescr["fieldRole"] == "roleType"]
-            listOfTypesValues.extend(valueOfType)
+            descrOfValueOfFieldWithType = fieldDescrOfFieldWithType["fieldValuesList"][0]
+            msgTypeValueHex = descrOfValueOfFieldWithType["valueHex"]
+
+            listOfTypesValues.extend(msgTypeValueHex)
 
         return listOfTypesValues
 
@@ -210,6 +214,14 @@ class ManagerMsgFormats(object):
 
     def getIndexOfFieldWithRoleLengthInMsgType(self, msgTypeTitle: str) -> int:
         fieldRole = "roleLength"
+
+        fieldIndex = self.getIndexOfFieldWithSpecificRoleInMsgType(msgTypeTitle, fieldRole)
+
+        return fieldIndex
+
+
+    def getIndexOfFieldWithRoleTypeInMsgType(self, msgTypeTitle: str) -> int:
+        fieldRole = "roleType"
 
         fieldIndex = self.getIndexOfFieldWithSpecificRoleInMsgType(msgTypeTitle, fieldRole)
 

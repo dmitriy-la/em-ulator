@@ -1,5 +1,5 @@
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtCore import QThread
+from PyQt5.QtCore import pyqtSignal
 
 
 class ThreadTimer(QThread):

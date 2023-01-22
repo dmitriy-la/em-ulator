@@ -1,18 +1,15 @@
 import gettext
-import os
-import socket
 
-from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import pyqtSlot
 
-import threads.threadTimer
-import threads.threadNetworkBase
+import src.threads.threadNetworkBase as threadNetworkBase
 
 _ = gettext.gettext
 
 
-class ThreadForSingleTcpClientInTcpServer(threads.threadNetworkBase.ThreadNetworkBase):
+class ThreadForSingleTcpClientInTcpServer(threadNetworkBase.ThreadNetworkBase):
     def __init__(self, datalineSettings: dict, clientSocket, threadIndex: int, parent=None):
-        threads.threadNetworkBase.ThreadNetworkBase.__init__(self, datalineSettings, parent)
+        threadNetworkBase.ThreadNetworkBase.__init__(self, datalineSettings, parent)
         self.ip = datalineSettings["ipOwn"]
         self.port = datalineSettings["portOwn"]
         self.recvSocket = clientSocket

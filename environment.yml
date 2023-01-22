@@ -1,4 +1,4 @@
-name: imit
+name: em-ulator
 channels:
   - defaults
 dependencies:

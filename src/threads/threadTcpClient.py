@@ -1,22 +1,20 @@
 import gettext
-import socket
 import os
+import socket
 
-from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
 
-import threads.threadTimer
-import threads.threadNetworkBase
+import src.threads.threadNetworkBase as threadNetworkBase
 
 _ = gettext.gettext
 
 
-class ThreadTcpClient(threads.threadNetworkBase.ThreadNetworkBase):
+class ThreadTcpClient(threadNetworkBase.ThreadNetworkBase):
     signalSetStateLabelNorm = pyqtSignal(str)
     signalSetStateLabelError = pyqtSignal(str, str)
 
     def __init__(self, datalineSettings: dict, parent=None):
-        threads.threadNetworkBase.ThreadNetworkBase.__init__(self, datalineSettings, parent)
-        # self.parent = parent
+        threadNetworkBase.ThreadNetworkBase.__init__(self, datalineSettings, parent)
 
 
     def initSockets(self) -> None:
@@ -84,7 +82,7 @@ class ThreadTcpClient(threads.threadNetworkBase.ThreadNetworkBase):
     def processConnectError(self, stateStrShort: str, stateStrFull='') -> None:
         self.connected = False
 
-        if not "Connect error" in stateStrFull:
+        if "Connect error" not in stateStrFull:
             self.parent.addMsgToLogger('', stateStrFull + _(' in'))
 
         self.signalSetStateLabelError.emit(stateStrShort, stateStrFull)

@@ -1,0 +1,9 @@
+[flake8]
+extend-ignore = E501, E302, E303
+exclude =
+    .git,
+    __pycache__,
+    ./src/__profiles__/*
+    old,
+    build,
+    dist

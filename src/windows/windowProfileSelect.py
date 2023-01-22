@@ -1,17 +1,19 @@
-import sys
-import os
-import gettext
 import configparser
+import gettext
+import os
+import sys
 
-from PyQt5.Qt import Qt
-from PyQt5.QtCore import pyqtSlot, QSize, QRect
-from PyQt5.QtWidgets import QCheckBox, QComboBox, QDialog, QInputDialog, QMessageBox, QHBoxLayout, QPushButton, QVBoxLayout
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtCore import QSize, pyqtSlot
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QCheckBox, QComboBox, QDialog, QHBoxLayout
+from PyQt5.QtWidgets import QInputDialog, QMessageBox, QPushButton, QVBoxLayout
 
-import windows.windowDatalineWork
-import windows.windowLogger
-import windows.windowProfileEditor
-import managers.managerProfiles
+import src.managers.managerDatalineSettings as managerDatalineSettings
+import src.managers.managerProfiles as managerProfiles
+import src.windows.windowDatalineWork as windowDatalineWork
+import src.windows.windowLogger as windowLogger
+import src.windows.windowProfileEditor as windowProfileEditor
+
 
 _ = gettext.gettext
 
@@ -74,7 +76,7 @@ class WindowProfileSelect(QDialog):
         hBoxLayout.addLayout(vBoxLayoutLower)
 
 
-    def addComboBoxListWithProfiles(self)-> QComboBox:
+    def addComboBoxListWithProfiles(self) -> QComboBox:
         self.comboBoxListWithProfiles = QComboBox()
 
         self.updateListOfProfiles()
@@ -193,7 +195,7 @@ class WindowProfileSelect(QDialog):
             elif profileTitle == "":
                 self.showErrorMessageBox(_("Empty profile title!"))
             else:
-                profileManager = managers.managerProfiles.ManagerProfiles()
+                profileManager = managerProfiles.ManagerProfiles()
                 profileManager.addEmptyProfile(profileTitle)
 
         return profileTitle
@@ -210,7 +212,7 @@ class WindowProfileSelect(QDialog):
 
 
     def startProfile(self, profileTitle):
-        self.logger = windows.windowLogger.WindowLogger(profileTitle)
+        self.logger = windowLogger.WindowLogger(profileTitle)
         self.startAllDataline(profileTitle)
 
         if self.checkBoxSetProfileAsDefault.isChecked():
@@ -221,7 +223,7 @@ class WindowProfileSelect(QDialog):
         datalineSettingsList = self.getDatalineDescrList(profileTitle)
 
         for index, datalineSettings in enumerate(datalineSettingsList):
-            datalineWindow = windows.windowDatalineWork.WindowDatalineWork(profileTitle, datalineSettings, self.logger)
+            datalineWindow = windowDatalineWork.WindowDatalineWork(profileTitle, datalineSettings, self.logger)
 
             datalineWindow.signalToLoggerMsgReceived.connect(self.logger.addMsgReceived)
             datalineWindow.signalToLoggerMsgSent.connect(self.logger.addMsgSent)
@@ -232,7 +234,7 @@ class WindowProfileSelect(QDialog):
 
 
     def getDatalineDescrList(self, profileTitle: str) -> list:
-        datalineSettingsManager = managers.managerDatalineSettings.ManagerDatalineSettings(profileTitle)
+        datalineSettingsManager = managerDatalineSettings.ManagerDatalineSettings(profileTitle)
         datalineList = datalineSettingsManager.getDatalineSettingsList()
 
         return datalineList
@@ -255,7 +257,7 @@ class WindowProfileSelect(QDialog):
 
         if profileTitle != "":
             self.comboBoxListWithProfiles.addItem(profileTitle)
-            self.configImitProfile = windows.windowProfileEditor.WindowProfileEditor(profileTitle)
+            self.configImitProfile = windowProfileEditor.WindowProfileEditor(profileTitle)
 
 
     @pyqtSlot()
@@ -277,7 +279,7 @@ class WindowProfileSelect(QDialog):
         if currenttProfileTitle == '':
             return
 
-        self.configImitProfile = windows.windowProfileEditor.WindowProfileEditor(currenttProfileTitle)
+        self.configImitProfile = windowProfileEditor.WindowProfileEditor(currenttProfileTitle)
 
 
     @pyqtSlot()
@@ -287,7 +289,7 @@ class WindowProfileSelect(QDialog):
         if profileTitleToRemove == '':
             return
 
-        profileManager = managers.managerProfiles.ManagerProfiles(profileTitleToRemove)
+        profileManager = managerProfiles.ManagerProfiles(profileTitleToRemove)
         profileManager.removeProfile(profileTitleToRemove)
 
         profileTitleIndexInComboBox = self.comboBoxListWithProfiles.currentIndex()

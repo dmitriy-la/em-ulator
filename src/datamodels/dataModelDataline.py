@@ -1,10 +1,9 @@
 import gettext
 import ipaddress
-import sys
 import socket
 
 from PyQt5.Qt import Qt
-from PyQt5.QtCore import QAbstractTableModel, QVariant, QModelIndex
+from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant
 
 _ = gettext.gettext
 
@@ -27,7 +26,7 @@ class DataModelDataline(QAbstractTableModel):
         self.datalineList = []
 
 
-    def headerData(self, section, orientation, role) -> QVariant:
+    def headerData(self, section, orientation, role):
         if role != Qt.DisplayRole:
             return QVariant()
         if orientation == Qt.Vertical:
@@ -412,13 +411,13 @@ class DataModelDataline(QAbstractTableModel):
         currentDatalineProtocol = currentDataline['protocolType']
 
         if index.column() == 9 and currentDatalineProtocol != "TCP-server":
-            return flags & ~Qt.ItemIsEnabled
+            return int(flags) & ~Qt.ItemIsEnabled
         else:
-            return flags | Qt.ItemIsEditable
+            return int(flags) | Qt.ItemIsEditable
 
 
     def insertRow(self, row, parent) -> bool:
-        self.rows+=1
+        self.rows += 1
         return self.insertRows(row, 1, parent)
 
 
@@ -452,9 +451,7 @@ class DataModelDataline(QAbstractTableModel):
             ipaddress.ip_address(address)
             return True
         except ValueError:
-            print('address/netmask is invalid: %s' % address)
-            return False
-        except:
+            print('address/netmask is invalid:', address)
             return False
 
 

@@ -1,28 +1,30 @@
 import gettext
 
 from PyQt5.Qt import Qt
-from PyQt5.QtCore import pyqtSlot, QSize
-from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtWidgets import QAbstractItemView, QComboBox, QGroupBox, QInputDialog, QLabel, QLineEdit, QMessageBox
-from PyQt5.QtWidgets import QHBoxLayout, QListWidget, QPushButton, QSplitter, QStackedWidget, QVBoxLayout
+from PyQt5.QtCore import QSize, pyqtSlot
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QAbstractItemView, QComboBox, QGroupBox
+from PyQt5.QtWidgets import QHBoxLayout, QInputDialog, QLabel, QLineEdit
+from PyQt5.QtWidgets import QListWidget, QMessageBox, QPushButton
+from PyQt5.QtWidgets import QSplitter, QStackedWidget, QVBoxLayout
 
-import handlers.handlerString
-import managers.managerAutoresponseSettings
-import windows.windowProfiledWindow
-import windows.windowAutorespConditionEditor
-import windows.windowAutorespActionEditor
+import src.handlers.handlerString as handlerString
+import src.managers.managerAutoresponseSettings as managerAutoresponseSettings
+import src.windows.windowAutorespActionEditor as windowAutorespActionEditor
+import src.windows.windowAutorespConditionEditor as windowAutorespConditionEditor
+import src.windows.windowProfiledWindow as windowProfiledWindow
 
 
 _ = gettext.gettext
 
 
-class WindowAutorespModesEditor(windows.windowProfiledWindow.WindowProfiledWindow):
+class WindowAutorespModesEditor(windowProfiledWindow.WindowProfiledWindow):
     def __init__(self, profileTitle: str, parent=None):
         super().__init__(profileTitle, parent)
         self.listConditionAndWidgetWithActions = []
         self.listModesAndWidgets = []
 
-        self.managerAutorespSettings = managers.managerAutoresponseSettings.ManagerAutoresponseSettings(self.profileTitle)
+        self.managerAutorespSettings = managerAutoresponseSettings.ManagerAutoresponseSettings(self.profileTitle)
 
         self.listOfAllAutorespModes = self.managerAutorespSettings.getAllAutorespModesList()
 
@@ -281,7 +283,7 @@ class WindowAutorespModesEditor(windows.windowProfiledWindow.WindowProfiledWindo
 
     def addComboBoxSelectModes(self) -> QComboBox:
         comboBoxSelectModes = QComboBox(self)
-        self.managerAutorespSettings = managers.managerAutoresponseSettings.ManagerAutoresponseSettings(self.profileTitle)
+        self.managerAutorespSettings = managerAutoresponseSettings.ManagerAutoresponseSettings(self.profileTitle)
         modesList = self.getAutorespModesList()
         comboBoxSelectModes.addItems(modesList)
 
@@ -307,8 +309,10 @@ class WindowAutorespModesEditor(windows.windowProfiledWindow.WindowProfiledWindo
     @pyqtSlot()
     def switchAutorespModes(self) -> None:
         if self.dataForModeChanged:
-            userReply = QMessageBox.question(self, '', _('Unsaved changes for mode! Continue without save?'),
-                                                  QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            messageBoxArguments = ['', _('Unsaved changes for mode! Continue without save?'),
+                                   QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes]
+
+            userReply = QMessageBox.question(self, *messageBoxArguments)
             if userReply == QMessageBox.No:
                 return
 
@@ -385,7 +389,7 @@ class WindowAutorespModesEditor(windows.windowProfiledWindow.WindowProfiledWindo
         allModeTitlesList = self.managerAutorespSettings.getListOfAutorespModesTitles()
 
         if modeTitle in allModeTitlesList:
-            stringHandler = handlers.handlerString.HandlerString()
+            stringHandler = handlerString.HandlerString()
             strModeTitlesList = stringHandler.getStrOrderedListFromList(allModeTitlesList)
 
             self.showErrorMessageBox(_('Mode title is already in use!'),
@@ -427,8 +431,9 @@ class WindowAutorespModesEditor(windows.windowProfiledWindow.WindowProfiledWindo
     def getActionTitleToDeleteFromInputDialog(self) -> str:
         actionTitlesList = self.managerAutorespSettings.getAllActionTitlesList()
 
-        item, result = QInputDialog.getItem(self, _('Select action for removal'), _(" List of actions"),
-                                                   actionTitlesList, 0, False)
+        inputDialogArguments = [_('Select action for removal'), _(" List of actions"), actionTitlesList, 0, False]
+
+        item, result = QInputDialog.getItem(self, *inputDialogArguments)
 
         actionTitleToDelete = ''
         if result:
@@ -543,14 +548,14 @@ class WindowAutorespModesEditor(windows.windowProfiledWindow.WindowProfiledWindo
 
     @pyqtSlot()
     def onClickCreateNewCondition(self) -> None:
-        windowCondEditor = windows.windowAutorespConditionEditor.WindowAutorespConditionEditor(self.profileTitle)
+        windowCondEditor = windowAutorespConditionEditor.WindowAutorespConditionEditor(self.profileTitle)
         windowCondEditor.signalNewCondCreated.connect(self.addNewCondition)
         windowCondEditor.exec()
 
 
     @pyqtSlot()
     def onClickCreateNewAction(self) -> None:
-        windowActionEditor = windows.windowAutorespActionEditor.WindowAutorespActionEditor(self.profileTitle)
+        windowActionEditor = windowAutorespActionEditor.WindowAutorespActionEditor(self.profileTitle)
         windowActionEditor.signalNewActionCreated.connect(self.updateActionList)
         windowActionEditor.exec()
 

@@ -1,6 +1,6 @@
-import handlers.handlerMsgParse
-import handlers.handlerString
-import managers.managerMsgFormats
+import src.handlers.handlerMsgParse as handlerMsgParse
+import src.handlers.handlerString as handlerString
+import src.managers.managerMsgFormats as managerMsgFormats
 
 
 class HandlerId(object):
@@ -9,7 +9,7 @@ class HandlerId(object):
 
         self.listOfAllSpacesIndexes = []
 
-        self.formatsManager = managers.managerMsgFormats.ManagerMsgFormats(self.profileTitle)
+        self.formatsManager = managerMsgFormats.ManagerMsgFormats(self.profileTitle)
 
 
     def setUndefIdInMsg(self, msgWithoutId: str) -> str:
@@ -20,9 +20,9 @@ class HandlerId(object):
 
 
     def setIdInMsg(self, msgWithoutId: str, idForMsg) -> str:
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
 
-        parser = handlers.handlerMsgParse.HandlerMsgParse(self.profileTitle)
+        parser = handlerMsgParse.HandlerMsgParse(self.profileTitle)
         listOfBinValues = parser.getListOfBinFieldValuesFromMsg(msgWithoutId)
 
         msgType = parser.getMsgTypeFromMsg(msgWithoutId)
@@ -40,5 +40,3 @@ class HandlerId(object):
             return msgWithoutId
         else:
             return msgHexWithId
-
-

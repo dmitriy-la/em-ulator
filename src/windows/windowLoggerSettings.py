@@ -4,7 +4,8 @@ from configparser import ConfigParser
 
 from PyQt5.Qt import Qt
 from PyQt5.QtCore import QPoint
-from PyQt5.QtWidgets import QDialog, QCheckBox, QComboBox, QLabel, QPushButton, QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import QComboBox, QDialog, QHBoxLayout
+from PyQt5.QtWidgets import QLabel, QPushButton, QVBoxLayout
 
 _ = gettext.gettext
 
@@ -39,7 +40,7 @@ class WindowLoggerSettings(QDialog):
 
         config = ConfigParser()
         try:
-            with open('settings.ini', 'r') as configFile:
+            with open('settings.ini', 'r'):
                 config.read('settings.ini')
                 currentDefaultProfile = config.get('current_profile', 'profile_title')
                 self.comboBoxForSettingDefaultProfile.setCurrentText(currentDefaultProfile)

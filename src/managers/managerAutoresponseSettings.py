@@ -51,8 +51,7 @@ class ManagerAutoresponseSettings(object):
 
 
     def readAllAutorespModesListFromFile(self) -> list:
-        defaultModeDict = { "modeTitle": "initMode",
-                            "condList":  [] }
+        defaultModeDict = {"modeTitle": "initMode", "condList": []}
         autorespModeslist = [defaultModeDict]
 
         try:

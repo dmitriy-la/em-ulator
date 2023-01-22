@@ -1,8 +1,8 @@
 import gettext
 
 from PyQt5.Qt import Qt
-from PyQt5.QtWidgets import QTextEdit, QAction
 from PyQt5.QtGui import QKeySequence
+from PyQt5.QtWidgets import QAction, QTextEdit
 
 
 _ = gettext.gettext

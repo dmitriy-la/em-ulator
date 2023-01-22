@@ -1,10 +1,10 @@
 import gettext
 import re
 
-import handlers.handlerMsgCreator
-import handlers.handlerString
-import managers.managerMsgFormats
-import managers.managerProfiles
+import src.handlers.handlerMsgCreator as handlerMsgCreator
+import src.handlers.handlerString as handlerString
+import src.managers.managerMsgFormats as managerMsgFormats
+import src.managers.managerProfiles as managerProfiles
 
 
 _ = gettext.gettext
@@ -17,11 +17,11 @@ class HandlerMsgParse(object):
         """
         self.profileTitle = profileTitle
 
-        self.formatManager = managers.managerMsgFormats.ManagerMsgFormats(self.profileTitle)
-        self.msgCreator = handlers.handlerMsgCreator.HandlerMsgCreator(self.profileTitle)
+        self.formatManager = managerMsgFormats.ManagerMsgFormats(self.profileTitle)
+        self.msgCreator = handlerMsgCreator.HandlerMsgCreator(self.profileTitle)
         self.msgTypeDict = dict()
 
-        profileManager = managers.managerProfiles.ManagerProfiles(self.profileTitle)
+        profileManager = managerProfiles.ManagerProfiles(self.profileTitle)
         self.maskForFormingReceiptType = profileManager.getMaskForFormingReceiptType()
 
         self.listRegexpForAllTypes = self.getRegexpListForAllMsgTypes()
@@ -58,7 +58,7 @@ class HandlerMsgParse(object):
         self.msgToParse = msg
         self.msgToParse = self.msgToParse.strip()
 
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
         binMsgToParse = stringHandler.getWholeMsgBinStrFromHexStr(self.msgToParse)
         msgType = self.getMsgTypeFromBinMsg(binMsgToParse)
 
@@ -94,7 +94,7 @@ class HandlerMsgParse(object):
 
     def addParsedInfoToMsgOfType(self, listOfBinFieldValues: list, msgType: str) -> str:
         """
-        :param binMsg:
+        :param listOfBinFieldValues:
         :param msgType:
         :return:
         """
@@ -105,7 +105,8 @@ class HandlerMsgParse(object):
         elif self.msgTypeDict["firstFieldTitleInGroup"] != '' and self.msgTypeDict["lastFieldTitleInGroup"] != '':
             pass
             # TODO: finnish groups
-            parsedMsgStr = self.addParsedInfoToGroupedMsgOfType(listOfBinFieldValues, msgType)
+            # parsedMsgStr = self.addParsedInfoToGroupedMsgOfType(listOfBinFieldValues, msgType)
+            parsedMsgStr = _("Parse error: msg contains groupes. Not parseable yet.")
         else:
             parsedMsgStr = self.addParsedInfoToRegularMsgOfType(listOfBinFieldValues, msgType)
 
@@ -252,8 +253,10 @@ class HandlerMsgParse(object):
             if value == fieldValue:
                 return meaningStr
 
-        if self.maskIsUsedForFormingReceiptType() and \
-            int(binFieldStr, 2) & int(self.maskForFormingReceiptType, 16) == int(self.maskForFormingReceiptType, 16):
+        receiptMaskWasAppliedToType = (int(binFieldStr, 2) & int(self.maskForFormingReceiptType, 16) ==
+                                       int(self.maskForFormingReceiptType, 16))
+
+        if self.maskIsUsedForFormingReceiptType() and receiptMaskWasAppliedToType:
             meaningStr = _('Receipt')
         else:
             meaningStr = _('Unknown Value')
@@ -285,7 +288,7 @@ class HandlerMsgParse(object):
         """
         regexpForReceiptTypeWithMaskApplied = ''
 
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
         binMask = stringHandler.getWholeMsgBinStrFromHexStr(self.maskForFormingReceiptType)
 
         binMaskLength = len(binMask)
@@ -313,8 +316,8 @@ class HandlerMsgParse(object):
             else:
                 regexpStrForField = self.getRegexpStrForFieldOfFixedLength(fieldDescr)
 
-                if fieldDescr["fieldRole"]  == 'roleType' and \
-                   msgTypeDict["isReceipt"] == 'True'     and \
+                if fieldDescr["fieldRole"] == 'roleType' and \
+                   msgTypeDict["isReceipt"] == 'True' and \
                    self.maskIsUsedForFormingReceiptType():
                     regexpStrForField = self.getRegexpForReceiptTypeWithMaskApplied()
 
@@ -335,7 +338,7 @@ class HandlerMsgParse(object):
         fieldDescrsList = msgTypeDict["fieldDescrsList"]
 
         if self.msgTypeContainsMoreThanOneFieldOfUndefinedLength(fieldDescrsList):
-            stringHandler = handlers.handlerString.HandlerString()
+            stringHandler = handlerString.HandlerString()
             hexSeparator = msgTypeDict["separator"]
             binSeparator = stringHandler.getBinStrFromHexStr(hexSeparator)
             regexpStrForField += binSeparator
@@ -364,7 +367,7 @@ class HandlerMsgParse(object):
         return regexpStrForField
 
 
-    def getBinStrOfSpecifiedBitLenFromHexStr(self, hexStr: str, bitLen = -1) -> str:
+    def getBinStrOfSpecifiedBitLenFromHexStr(self, hexStr: str, bitLen=-1) -> str:
         """
 
         :param hexStr:
@@ -419,7 +422,7 @@ class HandlerMsgParse(object):
         if fieldIndex is None:
             return msg
 
-        strHandler = handlers.handlerString.HandlerString()
+        strHandler = handlerString.HandlerString()
         newValueBin = strHandler.getBinStrFromHexStr(newValue)
 
         listOfBinFieldValues[fieldIndex] = newValueBin
@@ -444,7 +447,7 @@ class HandlerMsgParse(object):
         if idFieldIndex is None or msgTypeTitle == "":
             return ""
 
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
         binMsg = stringHandler.getWholeMsgBinStrFromHexStr(msg)
         binMsg = binMsg.replace(' ', '')
 
@@ -476,7 +479,7 @@ class HandlerMsgParse(object):
         if self.msgTypeDict is None or self.msgTypeDict["msgTypeTitle"] == "undef":
             return list()
 
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
         binMsg = stringHandler.getWholeMsgBinStrFromHexStr(msg)
         binMsg = binMsg.replace(' ', '')
 
@@ -599,7 +602,7 @@ class HandlerMsgParse(object):
     #         fieldDescr = self.msgDescrsList[currentFieldIndex]
     #         fieldTitle = fieldDescr["fieldTitle"]
     #
-    #         strHandler = handlers.handlerString.HandlerString()
+    #         strHandler = handlerString.HandlerString()
     #
     #         if fieldDescr["fieldLength"] == 'undef.':
     #             startHexStrFieldIndex = (startBinStrFieldIndex // 4) + currentFieldIndex

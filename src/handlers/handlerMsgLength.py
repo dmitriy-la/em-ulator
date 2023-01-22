@@ -1,6 +1,6 @@
-import handlers.handlerMsgParse
-import handlers.handlerString
-import managers.managerMsgFormats
+import src.handlers.handlerMsgParse as handlerMsgParse
+import src.handlers.handlerString as handlerString
+import src.managers.managerMsgFormats as managerMsgFormats
 
 
 class HandlerMsgLength(object):
@@ -9,15 +9,15 @@ class HandlerMsgLength(object):
 
         self.listOfAllSpacesIndexes = []
 
-        self.parser = handlers.handlerMsgParse.HandlerMsgParse(self.profileTitle)
+        self.parser = handlerMsgParse.HandlerMsgParse(self.profileTitle)
 
-        self.formatManager = managers.managerMsgFormats.ManagerMsgFormats(self.profileTitle)
+        self.formatManager = managerMsgFormats.ManagerMsgFormats(self.profileTitle)
 
 
     def setLengthInMsg(self, msgHex: str) -> str:
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
 
-        parser = handlers.handlerMsgParse.HandlerMsgParse(self.profileTitle)
+        parser = handlerMsgParse.HandlerMsgParse(self.profileTitle)
         listOfBinValues = parser.getListOfBinFieldValuesFromMsg(msgHex)
 
         msgType = parser.getMsgTypeFromMsg(msgHex)
@@ -27,7 +27,7 @@ class HandlerMsgLength(object):
 
         if lengthFieldIndex >= 0:
             lengthFieldLen = len(listOfBinValues[lengthFieldIndex])
-            strLength = stringHandler.getBinaryStringOfSpecifiedBitLen(msgLengthInBytes, lengthFieldLen)
+            strLength = stringHandler.getBinaryStringOfSpecifiedBitLen(str(msgLengthInBytes), lengthFieldLen)
 
             listOfBinValues[lengthFieldIndex] = strLength
 

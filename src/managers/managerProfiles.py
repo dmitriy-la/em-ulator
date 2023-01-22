@@ -1,6 +1,6 @@
-from configparser import ConfigParser
 import os
 import shutil
+from configparser import ConfigParser
 
 
 class ManagerProfiles(object):
@@ -127,7 +127,7 @@ class ManagerProfiles(object):
                 config.set('general_settings', 'mask_for_forming_receipt_type', mask)
 
             with open(self.generalProfileSettings, 'w') as configFile:
-                    config.write(configFile)
+                config.write(configFile)
         except IOError:
             with open(self.generalProfileSettings, 'a') as configFile:
                 config.add_section('general_settings')

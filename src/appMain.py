@@ -1,10 +1,11 @@
-import sys
-import os
 import configparser
+import os
+import sys
 
-import PyQt5
+import PyQt5.Qt
+import PyQt5.QtGui.QIcon
 
-import windows.windowProfileSelect
+import src.windows.windowProfileSelect as windowProfileSelect
 
 
 def datalineSettingsFileExists() -> bool:
@@ -55,7 +56,7 @@ def getCurrentProfileTitle() -> str:
     profileTitle = ''
 
     try:
-        with open('settings.ini', 'r') as configFile:
+        with open('settings.ini', 'r'):
             config.read('settings.ini')
 
             if not config.has_section('current_profile'):
@@ -85,13 +86,13 @@ if __name__ == '__main__':
 
     profileTitle = getCurrentProfileTitle()
 
-    ex = windows.windowProfileSelect.WindowProfileSelect()
+    ex = windowProfileSelect.WindowProfileSelect()
 
-    if profileTitle != '' and datalineSettingsFileExists() and msgFormatsFileExists():
-        ex.startProfile(profileTitle)
-        ex.close()
-    else:
+    if profileTitle == '':
         ex.show()
         ex.exec()
+    elif datalineSettingsFileExists() and msgFormatsFileExists():
+        ex.startProfile(profileTitle)
+        ex.close()
 
     sys.exit(app.exec_())

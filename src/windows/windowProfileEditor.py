@@ -2,38 +2,37 @@ import gettext
 import shutil
 
 from PyQt5.Qt import Qt
-from PyQt5.QtCore import pyqtSlot, QSize
-from PyQt5.QtWidgets import QAbstractItemView, QTableView,  \
-                            QFileDialog, QInputDialog,      \
-                            QHBoxLayout, QVBoxLayout,       \
-                            QGroupBox, QLabel, QLineEdit, QPushButton, QSpinBox, QSplitter, QHeaderView
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtCore import QSize, pyqtSlot
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QAbstractItemView, QFileDialog, QGroupBox
+from PyQt5.QtWidgets import QHBoxLayout, QHeaderView, QInputDialog, QTableView
+from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QSpinBox, QSplitter, QVBoxLayout
 
-import managers.managerMsgFormats
-import managers.managerDatalineSettings
-import managers.managerProfiles
-import datamodels.dataModelMsgTypes
-import datamodels.dataModelDataline
-import delegates.delegateComboBox
-import delegates.delegateCheckBox
-import windows.windowProfiledWindow
-import windows.windowTypeOfMsgEditor
-import windows.windowAutorespModesEditor
+import src.datamodels.dataModelDataline as dataModelDataline
+import src.datamodels.dataModelMsgTypes as dataModelMsgTypes
+import src.delegates.delegateCheckBox as delegateCheckBox
+import src.delegates.delegateComboBox as delegateComboBox
+import src.managers.managerDatalineSettings as managerDatalineSettings
+import src.managers.managerMsgFormats as managerMsgFormats
+import src.managers.managerProfiles as managerProfiles
+import src.windows.windowAutorespModesEditor as windowAutorespModesEditor
+import src.windows.windowProfiledWindow as windowProfiledWindow
+import src.windows.windowTypeOfMsgEditor as windowTypeOfMsgEditor
 
 
 _ = gettext.gettext
 
 
-class WindowProfileEditor(windows.windowProfiledWindow.WindowProfiledWindow):
+class WindowProfileEditor(windowProfiledWindow.WindowProfiledWindow):
     def __init__(self, profileTitle='default', parent=None):
         super().__init__(profileTitle, parent)
-        self.typesOfMsgModel = datamodels.dataModelMsgTypes.DataModelMsgTypes()
+        self.typesOfMsgModel = dataModelMsgTypes.DataModelMsgTypes()
 
-        self.datalineModel = datamodels.dataModelDataline.DataModelDataline()
+        self.datalineModel = dataModelDataline.DataModelDataline()
 
         self.windowAutorespEditorList = []
 
-        self.formatManager = managers.managerMsgFormats.ManagerMsgFormats(self.profileTitle)
+        self.formatManager = managerMsgFormats.ManagerMsgFormats(self.profileTitle)
 
         self.initUI()
 
@@ -195,7 +194,7 @@ class WindowProfileEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
             self.buttonEnterHexMaskForReceipt.setText(text)
 
-            profileManager = managers.managerProfiles.ManagerProfiles(self.profileTitle)
+            profileManager = managerProfiles.ManagerProfiles(self.profileTitle)
             profileManager.setMaskForFormingReceiptType(mask)
 
 
@@ -272,7 +271,7 @@ class WindowProfileEditor(windows.windowProfiledWindow.WindowProfiledWindow):
         hLayoutUpper = self.getHLayUpperForMsgTypeManagement()
 
         self.tableViewMsgTypes = self.getTableViewMsgTypes()
-        self.typesOfMsgModel = datamodels.dataModelMsgTypes.DataModelMsgTypes()
+        self.typesOfMsgModel = dataModelMsgTypes.DataModelMsgTypes()
         self.tableViewMsgTypes.setModel(self.typesOfMsgModel)
         self.selectionModelMsgTypes = self.tableViewMsgTypes.selectionModel()
 
@@ -477,7 +476,7 @@ class WindowProfileEditor(windows.windowProfiledWindow.WindowProfiledWindow):
         :return:
         """
         self.windowAutorespEditorList.clear()
-        window = windows.windowAutorespModesEditor.WindowAutorespModesEditor(self.profileTitle)
+        window = windowAutorespModesEditor.WindowAutorespModesEditor(self.profileTitle)
         self.windowAutorespEditorList.append(window)
 
 
@@ -499,8 +498,8 @@ class WindowProfileEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
 
     def addComboBoxWithChoicesToColumn(self, choices, columnNum) -> None:
-        delegateComboBox = delegates.delegateComboBox.DelegateComboBox(self.datalineModel, choices)
-        self.tableViewDataline.setItemDelegateForColumn(columnNum, delegateComboBox)
+        comboBoxDelegate = delegateComboBox.DelegateComboBox(self.datalineModel, choices)
+        self.tableViewDataline.setItemDelegateForColumn(columnNum, comboBoxDelegate)
 
         # supposedly makes combo boxes editable with a single-click:
         for row in range(self.datalineModel.rows):
@@ -513,7 +512,7 @@ class WindowProfileEditor(windows.windowProfiledWindow.WindowProfiledWindow):
         :param colNum:
         :return:
         """
-        checkBox = delegates.delegateCheckBox.DelegateCheckBox(self.tableViewMsgTypes)
+        checkBox = delegateCheckBox.DelegateCheckBox(self.tableViewMsgTypes)
         self.tableViewMsgTypes.setItemDelegateForColumn(colNum, checkBox)
 
 
@@ -594,7 +593,7 @@ class WindowProfileEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
         :return:
         """
-        datalineManager = managers.managerDatalineSettings.ManagerDatalineSettings(self.profileTitle)
+        datalineManager = managerDatalineSettings.ManagerDatalineSettings(self.profileTitle)
         datalineManager.updateDatalineSettingsFile(self.datalineModel.datalineList)
 
 
@@ -627,7 +626,7 @@ class WindowProfileEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
         :return:
         """
-        datalineManager = managers.managerDatalineSettings.ManagerDatalineSettings(self.profileTitle)
+        datalineManager = managerDatalineSettings.ManagerDatalineSettings(self.profileTitle)
         datalineList = datalineManager.getDatalineSettingsList()
 
         self.typesOfMsgModel.msgTypesList.clear()
@@ -646,7 +645,7 @@ class WindowProfileEditor(windows.windowProfiledWindow.WindowProfiledWindow):
         :return:
         """
         self.profileTitle = self.lineEditProfileTitle.text()
-        self.msgTypeEditor = windows.windowTypeOfMsgEditor.WindowTypeOfMsgEditor(self.profileTitle)
+        self.msgTypeEditor = windowTypeOfMsgEditor.WindowTypeOfMsgEditor(self.profileTitle)
         self.msgTypeEditor.signalMsgTypeEditorWindowClosed.connect(self.refreshMsgTypeList)
 
 
@@ -665,7 +664,7 @@ class WindowProfileEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
         msgType = [cell.data() for cell in indexes if cell.column() == 0][0]
 
-        self.msgTypeEditor = windows.windowTypeOfMsgEditor.WindowTypeOfMsgEditor(self.profileTitle, msgType)
+        self.msgTypeEditor = windowTypeOfMsgEditor.WindowTypeOfMsgEditor(self.profileTitle, msgType)
         self.msgTypeEditor.signalMsgTypeEditorWindowClosed.connect(self.refreshMsgTypeList)
 
 

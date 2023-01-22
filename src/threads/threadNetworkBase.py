@@ -1,11 +1,11 @@
-import socket
-import os
 import gettext
+import os
+import socket
 
-from PyQt5.QtCore import pyqtSlot, pyqtSignal, QThread
+from PyQt5.QtCore import QThread, pyqtSignal
 
-import handlers.handlerReceipting
-import threads.threadTimer
+import src.handlers.handlerReceipting as handlerReceipting
+import src.threads.threadTimer as threadTimer
 
 
 _ = gettext.gettext
@@ -45,13 +45,12 @@ class ThreadNetworkBase(QThread):
 
     def getReceiptingModule(self):
         if self.datalineSettings["protocolType"] == "TCP-server":
-            self.receipting = handlers.handlerReceipting.HandlerReceipting(self.parent.profileTitle,
-                                                                           self.parent.title,
-                                                                           self.sendMsg,
-                                                                           self.processToutAwaitingReceipt)
+            receiptingHandlerArgs = [self.parent.profileTitle, self.parent.title, self.sendMsg,
+                                     self.processToutAwaitingReceipt]
+            self.receipting = handlerReceipting.HandlerReceipting(*receiptingHandlerArgs)
         else:
-            self.receipting = handlers.handlerReceipting.HandlerReceipting(self.parent.profileTitle,
-                                                                           self.datalineSettings["title"])
+            receiptingHandlerArgs = [self.parent.profileTitle, self.datalineSettings["title"]]
+            self.receipting = handlerReceipting.HandlerReceipting(*receiptingHandlerArgs)
             self.receipting.signalResendMsg.connect(self.sendMsg)
             self.receipting.signalToutAwaitingReceipt.connect(self.processToutAwaitingReceipt)
 
@@ -259,8 +258,8 @@ class ThreadNetworkBase(QThread):
         receipt = self.receipting.proccessReceivedMsg(msgReceived)
 
         if receipt != '' and self.parent.receiptOn:
-            receiptDelayTimer = threads.threadTimer.ThreadTimer(self.sendMsg, receipt,
-                                                                self.receipting.receiptDelay)
+            timerArgs = [self.sendMsg, receipt, self.receipting.receiptDelay]
+            receiptDelayTimer = threadTimer.ThreadTimer(*timerArgs)
             self.receiptDelayTimersList.append(receiptDelayTimer)
 
             self.removeFinishedReceiptDelayTimersFromTimersList()

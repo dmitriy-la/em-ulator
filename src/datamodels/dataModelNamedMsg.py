@@ -3,8 +3,8 @@ import gettext
 from PyQt5.Qt import Qt
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant
 
-import managers.managerNamedMsg
-import handlers.handlerMsgParse
+import src.handlers.handlerMsgParse as handlerMsgParse
+import src.managers.managerNamedMsg as managerNamedMsg
 
 _ = gettext.gettext
 
@@ -19,11 +19,11 @@ class DataModelNamedMsg(QAbstractTableModel):
         self.rows = 0
         self.namedMsgList = []
 
-        self.managerNamedMsg = managers.managerNamedMsg.ManagerNamedMsg(profileTitle)
-        self.parser = handlers.handlerMsgParse.HandlerMsgParse(profileTitle)
+        self.managerNamedMsg = managerNamedMsg.ManagerNamedMsg(profileTitle)
+        self.parser = handlerMsgParse.HandlerMsgParse(profileTitle)
 
 
-    def headerData(self, section, orientation, role) -> QVariant:
+    def headerData(self, section, orientation, role):
         if role != Qt.DisplayRole:
             return QVariant()
         if orientation == Qt.Vertical:
@@ -37,7 +37,7 @@ class DataModelNamedMsg(QAbstractTableModel):
         return QVariant()
 
 
-    def data(self, index, role) -> QVariant:
+    def data(self, index, role):
         if self.dataIsNotRetrievable(index, role):
             return QVariant()
 
@@ -99,7 +99,7 @@ class DataModelNamedMsg(QAbstractTableModel):
         elif self.editingNamedMsgHex(index, role):
             setResult = self.setNewMsgHex(index, value)
 
-        if setResult == True:
+        if setResult is True:
             # For resizing column's width:
             self.dataChanged.emit(QModelIndex(), QModelIndex())
             # Saving changes
@@ -167,13 +167,13 @@ class DataModelNamedMsg(QAbstractTableModel):
         self.endInsertRows()
 
 
-    def flags(self, index) -> int:
+    def flags(self, index):
         flags = QAbstractTableModel.flags(self, index)
         if index.isValid():
             if index.column() == 0:
-                return flags | Qt.ItemIsEditable
+                return int(flags) | Qt.ItemIsEditable
             else:
-                return flags
+                return int(flags)
         else:
             return flags
 

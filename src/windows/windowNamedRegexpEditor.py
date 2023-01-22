@@ -1,19 +1,21 @@
 import gettext
 
 from PyQt5.Qt import Qt
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QRegExp, QObject
-from PyQt5.QtWidgets import QCheckBox, QComboBox, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QSpinBox, QTabBar, QTabWidget, QWidget, QVBoxLayout
+from PyQt5.QtCore import QObject, QRegExp, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtWidgets import QCheckBox, QComboBox, QGridLayout, QGroupBox
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QSpinBox
+from PyQt5.QtWidgets import QTabBar, QTabWidget, QVBoxLayout, QWidget
 
-import managers.managerNamedRegexp
-import handlers.handlerMsgCreator
-import handlers.handlerString
-import windows.windowProfiledWindow
+import src.handlers.handlerMsgCreator as handlerMsgCreator
+import src.handlers.handlerString as handlerString
+import src.managers.managerNamedRegexp as managerNamedRegexp
+import src.windows.windowProfiledWindow as windowProfiledWindow
 
 _ = gettext.gettext
 
 
-class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow):
+class WindowNamedRegexpEditor(windowProfiledWindow.WindowProfiledWindow):
     signalNamedRegexpAdded = pyqtSignal(str, str)
 
     def __init__(self, profileTitle: str, parent=None):
@@ -34,7 +36,7 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
 
         self.allGroupedFieldValuesAsAnyValueFlag = False
 
-        self.msgCreator = handlers.handlerMsgCreator.HandlerMsgCreator(profileTitle)
+        self.msgCreator = handlerMsgCreator.HandlerMsgCreator(profileTitle)
 
         self.initUI()
 
@@ -64,9 +66,6 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
     def setWindowProperties(self) -> None:
         title = _('Named Regexp Editor')
         self.setWindowTitle(title)
-
-        flags = self.windowFlags()
-        # self.setWindowFlags(int(flags) | Qt.Tool)
 
         self.setModal(True)
         self.setFocusPolicy(Qt.StrongFocus)
@@ -409,10 +408,10 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
         self.tabs.setTabsClosable(True)
         self.tabs.currentChanged.connect(self.addNewTab)
         self.tabs.tabCloseRequested.connect(self.closeGroupedFieldTab)
-        self.tabs.tabBar().setTabButton(0, QTabBar.RightSide, None)
-        self.tabs.tabBar().setTabButton(0, QTabBar.LeftSide, None)
-        self.tabs.tabBar().setTabButton(1, QTabBar.RightSide, None)
-        self.tabs.tabBar().setTabButton(1, QTabBar.LeftSide, None)
+        self.tabs.tabBar().setTabButton(0, QTabBar.RightSide, QWidget())
+        self.tabs.tabBar().setTabButton(0, QTabBar.LeftSide, QWidget())
+        self.tabs.tabBar().setTabButton(1, QTabBar.RightSide, QWidget())
+        self.tabs.tabBar().setTabButton(1, QTabBar.LeftSide, QWidget())
 
 
     def setResultingMsgString(self) -> None:
@@ -421,7 +420,7 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
         """
         listOfInitialHexFieldValues = self.getListOfEnteredFieldsValues()
 
-        strHandler = handlers.handlerString.HandlerString()
+        strHandler = handlerString.HandlerString()
         listOfInitialBinFieldValues = strHandler.getListOfBinValuesFromListOfHexValues(listOfInitialHexFieldValues)
         self.msgCreator.setListOfFieldValuesFromList(listOfInitialBinFieldValues)
 
@@ -433,8 +432,7 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
 
     def proccessFieldWithRoleType(self, fieldDescrAndWidgetsDict: dict) -> None:
         """
-        :param widgetToAdd:
-        :param fieldDescr:
+        :param fieldDescrAndWidgetsDict:
         :return:
         """
         widgetForFieldValue = fieldDescrAndWidgetsDict["widgetForFieldValue"]
@@ -465,7 +463,7 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
 
     def proccessFieldWithRoleIdOrCrc(self, fieldDescrAndWidgetsDict: dict):
         """
-        :param widgetToAdd:
+        :param fieldDescrAndWidgetsDict:
         :return:
         """
         widgetForFieldValue = fieldDescrAndWidgetsDict["widgetForFieldValue"]
@@ -480,7 +478,7 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
 
     def proccessFieldWithRoleLength(self, fieldDescrAndWidgetsDict: dict):
         """
-        :param widgetToAdd:
+        :param fieldDescrAndWidgetsDict
         :return:
         """
 
@@ -810,7 +808,6 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
         :return:
         """
         currentMsgType = self.comboBoxCurrentMsgType.currentText()
-        msgInfoDict = self.formatManager.getInfoForMsgType(currentMsgType)
         binStrSepar = self.formatManager.getBinSeparatorForMsgType(currentMsgType)
 
         listOfFieldsValues = self.getListOfEnteredFieldsValues()
@@ -831,7 +828,6 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
                     listOfPaddedValues[index] = 'x' * (len(listOfPaddedValues[index].strip()))
 
         return listOfPaddedValues
-
 
 
     def getListOfPaddedValuesWithRegexpForAllGroupedFields(self, listOfPaddedValues: list) -> list:
@@ -892,7 +888,7 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
         index = self.formatManager.getIndexOfFirstFieldInGroupInMsgType(currentMsgType)
 
         if len(groupedValuesList) > 0:
-            listOfEnteredFieldsValues[index : index] = groupedValuesList
+            listOfEnteredFieldsValues[index: index] = groupedValuesList
 
         return listOfEnteredFieldsValues
 
@@ -1116,7 +1112,7 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
 
         regexpBinStr = self.getRegexpBinStr()
 
-        managerRegexpList = managers.managerNamedRegexp.ManagerNamedRegexp(self.profileTitle)
+        managerRegexpList = managerNamedRegexp.ManagerNamedRegexp(self.profileTitle)
         newRegexpDict = {"regexpTitle": regexpTitle, "regexpBinStr": regexpBinStr}
         managerRegexpList.addNewNamedRegexp(newRegexpDict)
 
@@ -1126,8 +1122,8 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
 
 
     def regexpTitleIsNotUnique(self, regexpTitle: str) -> bool:
-        managerNamedRegexp = managers.managerNamedRegexp.ManagerNamedRegexp(self.profileTitle)
-        allRegexpTitlesList = managerNamedRegexp.getAllNamedRegexpTitlesList()
+        regexpManager = managerNamedRegexp.ManagerNamedRegexp(self.profileTitle)
+        allRegexpTitlesList = regexpManager.getAllNamedRegexpTitlesList()
 
         if regexpTitle in allRegexpTitlesList:
             strRegexpTitlesList = self.getStrRegexpTitlesList(allRegexpTitlesList)
@@ -1141,7 +1137,7 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
 
 
     def getStrRegexpTitlesList(self, allRegexpTitlesList: list) -> list:
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
         strRegexpTitlesList = stringHandler.getStrOrderedListFromList(allRegexpTitlesList)
 
         return strRegexpTitlesList
@@ -1152,7 +1148,7 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
         msgInResultMsg = textInResultMsg.split(':')[1]
         msgInResultMsg = msgInResultMsg.strip()
 
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
         msgBinStr = stringHandler.getWholeMsgBinStrFromHexStr(msgInResultMsg)
 
         regexpBinStr = msgBinStr.replace('x', '[0-1]')
@@ -1191,8 +1187,7 @@ class WindowNamedRegexpEditor(windows.windowProfiledWindow.WindowProfiledWindow)
 
             self.prepareTabs()
 
-            self.fieldDescrAndWidgetsDict = {"fieldDescr": dict(), "widgetForFieldValue": QWidget(),
-                                                                      "anyValueCheckBox": QCheckBox()}
+            self.fieldDescrAndWidgetsDict = {"fieldDescr": dict(), "widgetForFieldValue": QWidget(), "anyValueCheckBox": QCheckBox()}
             for widgetGrouped in self.listWidgetTabs:
                 if isinstance(widgetGrouped, QGridLayout) or isinstance(widgetGrouped, QGroupBox):
                     continue

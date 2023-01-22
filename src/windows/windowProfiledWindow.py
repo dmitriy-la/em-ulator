@@ -1,11 +1,11 @@
 import gettext
 
-from PyQt5.Qt import Qt, QSettings, QSize
-from PyQt5.QtWidgets import QDialog, QPushButton, QMessageBox
+from PyQt5.Qt import QSettings, QSize, Qt
 from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QDialog, QMessageBox, QPushButton
 
-import managers.managerMsgFormats
-import managers.managerProfiles
+import src.managers.managerMsgFormats as managerMsgFormats
+import src.managers.managerProfiles as managerProfiles
 
 
 _ = gettext.gettext
@@ -20,10 +20,10 @@ class WindowProfiledWindow(QDialog):
 
         self.settings = QSettings()
 
-        self.formatManager = managers.managerMsgFormats.ManagerMsgFormats(self.profileTitle)
+        self.formatManager = managerMsgFormats.ManagerMsgFormats(self.profileTitle)
         self.listOfAllMsgTypesInfo = self.formatManager.getListOfAllMsgTypeDescrs()
 
-        self.profileManager = managers.managerProfiles.ManagerProfiles(self.profileTitle)
+        self.profileManager = managerProfiles.ManagerProfiles(self.profileTitle)
         self.maskForFormingReceiptType = self.profileManager.getMaskForFormingReceiptType()
 
         self.buttonClose = self.getCloseButton()

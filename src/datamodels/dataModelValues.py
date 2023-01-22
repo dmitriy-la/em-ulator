@@ -1,7 +1,7 @@
 import gettext
 
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant
 from PyQt5.Qt import Qt
+from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant
 
 _ = gettext.gettext
 
@@ -27,7 +27,7 @@ class DataModelValues(QAbstractTableModel):
         return 2
 
 
-    def headerData(self, section, orientation, role) -> QVariant:
+    def headerData(self, section, orientation, role):
         if role != Qt.DisplayRole:
             return QVariant()
         if orientation == Qt.Vertical:
@@ -51,7 +51,7 @@ class DataModelValues(QAbstractTableModel):
         self.endInsertRows()
 
 
-    def data(self, index, role) -> QVariant:
+    def data(self, index, role):
         if self.dataIsNotRetrievable(index, role):
             return QVariant()
 
@@ -136,10 +136,10 @@ class DataModelValues(QAbstractTableModel):
         return setDataResult
 
 
-    def flags(self, index) -> int:
+    def flags(self, index):
         flags = QAbstractTableModel.flags(self, index)
         if index.isValid():
-            return flags | Qt.ItemIsEditable
+            return int(flags) | Qt.ItemIsEditable
         else:
             return flags
 

@@ -1,17 +1,17 @@
 import gettext
 
 from PyQt5.Qt import Qt
+from PyQt5.QtCore import QRegExp, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QRegExpValidator
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QRegExp
-from PyQt5.QtWidgets import QComboBox, QGroupBox, QLabel, QLineEdit, QPushButton
-from PyQt5.QtWidgets import QGridLayout, QHBoxLayout, QVBoxLayout
-from PyQt5.QtWidgets import QListWidget, QStackedWidget
+from PyQt5.QtWidgets import QComboBox, QGridLayout, QGroupBox, QLabel
+from PyQt5.QtWidgets import QHBoxLayout, QLineEdit, QListWidget
+from PyQt5.QtWidgets import QPushButton, QStackedWidget, QVBoxLayout
 
-import handlers.handlerString
-import managers.managerAutoresponseSettings
-import managers.managerNamedMsg
-import windows.windowNamedMsgEditor
-import windows.windowProfiledWindow
+import src.handlers.handlerString as handlerString
+import src.managers.managerAutoresponseSettings as managerAutoresponseSettings
+import src.managers.managerNamedMsg as managerNamedMsg
+import src.windows.windowNamedMsgEditor as windowNamedMsgEditor
+import src.windows.windowProfiledWindow as windowProfiledWindow
 
 
 _ = gettext.gettext
@@ -22,7 +22,7 @@ ROW_INDEX_OF_ACTION_TYPE_RESPOND_WITH_NAMED_MSG = 2
 ROW_INDEX_OF_ACTION_TYPE_RESPOND_WITH_FEW_NAMED_MSG = 3
 
 
-class WindowAutorespActionEditor(windows.windowProfiledWindow.WindowProfiledWindow):
+class WindowAutorespActionEditor(windowProfiledWindow.WindowProfiledWindow):
     signalNewActionCreated = pyqtSignal(dict)
 
     def __init__(self, profileTitle: str, parent=None):
@@ -33,8 +33,8 @@ class WindowAutorespActionEditor(windows.windowProfiledWindow.WindowProfiledWind
         self.listOfWidgetsWithFieldTitlesAndValues = []
         self.fieldTitlesLineCounter = 0
 
-        self.managerNamedMsg = managers.managerNamedMsg.ManagerNamedMsg(self.profileTitle)
-        self.managerAutoresp = managers.managerAutoresponseSettings.ManagerAutoresponseSettings(self.profileTitle)
+        self.managerNamedMsg = managerNamedMsg.ManagerNamedMsg(self.profileTitle)
+        self.managerAutoresp = managerAutoresponseSettings.ManagerAutoresponseSettings(self.profileTitle)
 
         self.initUI()
 
@@ -488,7 +488,7 @@ class WindowAutorespActionEditor(windows.windowProfiledWindow.WindowProfiledWind
 
     def getStrOrderedActionTitlesList(self) -> str:
         allActionTitlesList = self.managerAutoresp.getAllActionTitlesList()
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
         strActionTitlesList = stringHandler.getStrOrderedListFromList(allActionTitlesList)
 
         return strActionTitlesList
@@ -646,7 +646,7 @@ class WindowAutorespActionEditor(windows.windowProfiledWindow.WindowProfiledWind
 
         :return:
         """
-        window = windows.windowNamedMsgEditor.WindowNamedMsgEditor(self.profileTitle)
+        window = windowNamedMsgEditor.WindowNamedMsgEditor(self.profileTitle)
         window.signalNamedMsgAdded.connect(self.addNewNamedMsg)
         window.exec_()
 

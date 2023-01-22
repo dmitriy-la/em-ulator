@@ -2,8 +2,9 @@ import gettext
 import socket
 
 from PyQt5.QtCore import QThread
-from PyQt5.QtCore import pyqtBoundSignal, pyqtSignal, pyqtSlot
-import threads.threadForSingleTcpClientInTcpServer
+from PyQt5.QtCore import pyqtSignal
+
+import src.threads.threadForSingleTcpClientInTcpServer as threadForSingleTcpClientInTcpServer
 
 
 _ = gettext.gettext
@@ -120,10 +121,8 @@ class ThreadTcpServer(QThread):
         newClientThreadSettings["ipOwn"] = ip
         newClientThreadSettings["portOwn"] = port
 
-        newthread = threads.threadForSingleTcpClientInTcpServer.ThreadForSingleTcpClientInTcpServer(newClientThreadSettings,
-                                                                                                    clientSocket,
-                                                                                                    threadIndex,
-                                                                                                    self.parent)
+        clientThreadArgs = [newClientThreadSettings, clientSocket, threadIndex, self.parent]
+        newthread = threadForSingleTcpClientInTcpServer.ThreadForSingleTcpClientInTcpServer(*clientThreadArgs)
 
         self.parent.listClientThreads.append(newthread)
         newthread.start()

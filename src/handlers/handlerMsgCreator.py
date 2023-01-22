@@ -1,7 +1,7 @@
 import random
 
-import handlers.handlerString
-import managers.managerMsgFormats
+import src.handlers.handlerString as handlerString
+import src.managers.managerMsgFormats as managerMsgFormats
 
 
 class HandlerMsgCreator(object):
@@ -10,7 +10,7 @@ class HandlerMsgCreator(object):
         self.msgDict = dict()
         self.msgTypeTitle = ''
 
-        self.formatManager = managers.managerMsgFormats.ManagerMsgFormats(self.profileTitle)
+        self.formatManager = managerMsgFormats.ManagerMsgFormats(self.profileTitle)
 
         self.fieldDescrsList = []
         self.msgTypeContainsMoreThanOneFieldOfUndefinedLength = self.msgTypeContainsMoreThanOneFieldOfUndefinedLength()
@@ -31,7 +31,7 @@ class HandlerMsgCreator(object):
     def getExampleMsgFromMsgTypeDict(self, msgTypeDict: dict) -> str:
         exampleBinMsgString = self.getExampleBinMsgString(msgTypeDict)
 
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
         exampleMsgString = stringHandler.getHexStrFromBinStr(exampleBinMsgString)
 
         return exampleMsgString
@@ -48,7 +48,7 @@ class HandlerMsgCreator(object):
 
             intBitLen = self.getCurrentFieldBitLength(fieldDescr)
 
-            stringHandler = handlers.handlerString.HandlerString()
+            stringHandler = handlerString.HandlerString()
             binStrExampleValueOfField = stringHandler.getBinaryStringOfSpecifiedBitLen(exampleValueOfField, intBitLen)
 
             exampleBinMsgString += binStrExampleValueOfField + ' '
@@ -129,7 +129,7 @@ class HandlerMsgCreator(object):
             if bitCount % 8 == 0:
                 binMsg += ' '
 
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
         msg = stringHandler.getHexStrFromBinStr(binMsg)
 
         return msg
@@ -158,7 +158,7 @@ class HandlerMsgCreator(object):
 
     def getMsgFromListOfPreviouslySetHexFieldValuesInMsgType(self, msgTypeTitle: str) -> str:
         for indexOfFieldValue, fieldValue in enumerate(self.listOfFieldValuesInMsg):
-            strHandler = handlers.handlerString.HandlerString()
+            strHandler = handlerString.HandlerString()
             binFieldValue = strHandler.getBinStrFromHexStr(fieldValue)
 
             fieldLength = self.formatManager.getStrFieldLengthByFieldIndexInMsgType(msgTypeTitle, indexOfFieldValue)
@@ -277,7 +277,7 @@ class HandlerMsgCreator(object):
         value = self.getFieldValueByIndex(fieldIndex)
         fieldLength = self.getFieldLengthByFieldIndex(fieldIndex)
 
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
 
         if self.fieldRoleIsCrc(fieldIndex):
             strBinFieldValue = stringHandler.getBinaryStringOfSpecifiedBitLen("x", fieldLength)
@@ -293,14 +293,15 @@ class HandlerMsgCreator(object):
         else:
             if isinstance(self.listOfFieldValuesInMsg[fieldIndex], str):
                 valueInList = self.listOfFieldValuesInMsg[fieldIndex].split(' - ')
-                try: value = int(valueInList[0], 16)
+                try:
+                    value = int(valueInList[0], 16)
                 except ValueError:
                     value = 0
             else:
                 value = self.listOfFieldValuesInMsg[fieldIndex]
 
         if self.fieldRoleIsId(fieldIndex):
-            strHandler = handlers.handlerString.HandlerString()
+            strHandler = handlerString.HandlerString()
             value = strHandler.getHexStrFromBinStr(self.listOfFieldValuesInMsg[fieldIndex])
 
         fieldIndex = self.adjustIndexForMsgWithGroupedFieldsInMsgType(fieldIndex)
@@ -380,10 +381,9 @@ class HandlerMsgCreator(object):
                 if descr["fieldLength"] == 'undef.':
                     binRegexpOfGroupedField += '([0-1]{8})*'
                 else:
-                    binRegexpOfGroupedField += '[0-1]{' + descr["fieldLength"] +'}'
+                    binRegexpOfGroupedField += '[0-1]{' + descr["fieldLength"] + '}'
 
             if descr["fieldTitle"] == lastFieldTitleInGroup:
-                formingGroupedFields = False
                 break
 
         return binRegexpOfGroupedField
@@ -459,17 +459,7 @@ class HandlerMsgCreator(object):
 
 
     def getFieldLengthByFieldIndex(self, fieldIndex: int) -> int:
-        fieldIndex = self.adjustIndexForMsgWithGroupedFieldsInMsgType(fieldIndex)
-
-        if fieldIndex >= len(self.fieldDescrsList):
-            return 0
-
-        if self.fieldDescrsList[fieldIndex]["fieldLength"] == 'undef.':
-            fieldLength = 4 * len(str(self.listOfHexFieldValuesInMsg[fieldIndex]))
-        else:
-            fieldLength = self.getCurrentFieldBitLength(self.fieldDescrsList[fieldIndex])
-
-        return fieldLength
+        return self.fieldDescrsList[fieldIndex]
 
 
     def someFieldsAreShorterThenByte(self) -> bool:

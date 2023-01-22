@@ -2,19 +2,20 @@ import gettext
 import socket
 
 from PyQt5.Qt import Qt
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize
-from PyQt5.QtWidgets import QCheckBox, QComboBox, QFrame, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QVBoxLayout
-from PyQt5.QtWidgets import QPushButton, QSpinBox
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtCore import QSize, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QCheckBox, QComboBox, QGroupBox
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit
+from PyQt5.QtWidgets import QPushButton, QSpinBox, QVBoxLayout
 
-import windows.windowProfiledWindow
-import managers.managerDatalineSettings
+import src.managers.managerDatalineSettings as managerDatalineSettings
+import src.windows.windowProfiledWindow as windowProfiledWindow
 
 
 _ = gettext.gettext
 
 
-class WindowDatalineSettings(windows.windowProfiledWindow.WindowProfiledWindow):
+class WindowDatalineSettings(windowProfiledWindow.WindowProfiledWindow):
     signalDatalineSettingsUpdated = pyqtSignal(dict)
 
     def __init__(self, profileTitle: str, parent=None):
@@ -460,7 +461,7 @@ class WindowDatalineSettings(windows.windowProfiledWindow.WindowProfiledWindow):
     def closeEvent(self, event):
         self.parent.datalineSettingsWindowIsShown = False
 
-        datalineManager = managers.managerDatalineSettings.ManagerDatalineSettings(self.profileTitle)
+        datalineManager = managerDatalineSettings.ManagerDatalineSettings(self.profileTitle)
         self.datalineSettings = self.getCurrentDatalineSettings()
 
         datalineManager.updateDatalineSettingsOfSingleDataline(self.datalineSettings)

@@ -1,20 +1,19 @@
-import socket
-import importlib
 import gettext
+import importlib
 import os
+import socket
 
 from PyQt5.QtCore import pyqtSlot
 
-import threads.threadTimer
-import threads.threadNetworkBase
+import src.threads.threadNetworkBase as threadNetworkBase
 
 
 _ = gettext.gettext
 
 
-class ThreadUdp(threads.threadNetworkBase.ThreadNetworkBase):
+class ThreadUdp(threadNetworkBase.ThreadNetworkBase):
     def __init__(self, datalineSettings: dict, parent=None):
-        threads.threadNetworkBase.ThreadNetworkBase.__init__(self, datalineSettings, parent)
+        threadNetworkBase.ThreadNetworkBase.__init__(self, datalineSettings, parent)
 
         if datalineSettings["protocolType"] == 'raw':
             self.runningRawSocket = True

@@ -1,29 +1,33 @@
-import gettext
 import datetime
+import gettext
 
 from PyQt5.Qt import Qt
-from PyQt5.QtWidgets import QAbstractItemView, QGroupBox, QLabel, QLayout, QHBoxLayout, QPushButton, QTableView, QVBoxLayout, QHeaderView
-from PyQt5.QtCore import pyqtBoundSignal, pyqtSignal, pyqtSlot, QSize, QPoint, QThread
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtCore import QPoint, QSize, QThread
+from PyQt5.QtCore import pyqtBoundSignal, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QAbstractItemView, QGroupBox, QHBoxLayout
+from PyQt5.QtWidgets import QHeaderView, QLabel, QLayout
+from PyQt5.QtWidgets import QPushButton, QTableView, QVBoxLayout
 
-import datamodels.dataModelNamedMsg
-import handlers.handlerReceipting
-import handlers.handlerResponse
-import handlers.handlerMsgParse
-import handlers.handlerCrc
-import managers.managerNamedMsg
-import managers.managerDatalineSettings
-import threads.threadTcpServer
-import threads.threadTcpClient
-import threads.threadUdp
-import windows.windowProfiledWindow
-import windows.windowNamedMsgEditor
-import windows.windowDatalineSettings
+
+import src.datamodels.dataModelNamedMsg as dataModelNamedMsg
+import src.handlers.handlerCrc as handlerCrc
+import src.handlers.handlerMsgParse as handlerMsgParse
+import src.handlers.handlerResponse as handlerResponse
+import src.managers.managerDatalineSettings as managerDatalineSettings
+import src.managers.managerNamedMsg as managerNamedMsg
+import src.threads.threadTcpClient as threadTcpClient
+import src.threads.threadTcpServer as threadTcpServer
+import src.threads.threadUdp as threadUdp
+import src.windows.windowDatalineSettings as windowDatalineSettings
+import src.windows.windowNamedMsgEditor as windowNamedMsgEditor
+import src.windows.windowProfiledWindow as windowProfiledWindow
+
 
 _ = gettext.gettext
 
 
-class WindowDatalineWork(windows.windowProfiledWindow.WindowProfiledWindow):
+class WindowDatalineWork(windowProfiledWindow.WindowProfiledWindow):
     signalToLoggerMsgReceived = pyqtSignal(str)
     signalToLoggerMsgSent = pyqtSignal(str)
     signalToLoggerMsgError = pyqtSignal(str)
@@ -32,13 +36,13 @@ class WindowDatalineWork(windows.windowProfiledWindow.WindowProfiledWindow):
         super().__init__(profileTitle, parent)
         self.datalineSettings = datalineSettings
 
-        self.dataModelNamedMsgs = datamodels.dataModelNamedMsg.DataModelNamedMsg(profileTitle)
+        self.dataModelNamedMsgs = dataModelNamedMsg.DataModelNamedMsg(profileTitle)
 
-        self.msgParser = handlers.handlerMsgParse.HandlerMsgParse(self.profileTitle)
+        self.msgParser = handlerMsgParse.HandlerMsgParse(self.profileTitle)
 
-        self.managerNamedMsg = managers.managerNamedMsg.ManagerNamedMsg(self.profileTitle)
+        self.managerNamedMsg = managerNamedMsg.ManagerNamedMsg(self.profileTitle)
 
-        self.responseManager = handlers.handlerResponse.HandlerResponse(self.profileTitle)
+        self.responseManager = handlerResponse.HandlerResponse(self.profileTitle)
         self.responseManager.signalAddListOfMsgToSendingList.connect(self.addListOfMsgToSendingList)
         self.msgToBeSentList = self.responseManager.getListOfMsgToSendAtStart()
 
@@ -340,19 +344,19 @@ class WindowDatalineWork(windows.windowProfiledWindow.WindowProfiledWindow):
         self.labelNetStateCurrent.setStyleSheet('QLabel {background-color : yellow; }')
 
         if self.datalineSettings["protocolType"] == 'TCP-server':
-            self.networkThread = threads.threadTcpServer.ThreadTcpServer(self.datalineSettings, self)
+            self.networkThread = threadTcpServer.ThreadTcpServer(self.datalineSettings, self)
             print('Started TCP-server.')
         elif self.datalineSettings["protocolType"] == 'TCP-client':
-            self.networkThread = threads.threadTcpClient.ThreadTcpClient(self.datalineSettings, self)
+            self.networkThread = threadTcpClient.ThreadTcpClient(self.datalineSettings, self)
             print('Started TCP-client.')
         elif self.datalineSettings["protocolType"] == 'UDP':
-            self.networkThread = threads.threadUdp.ThreadUdp(self.datalineSettings, self)
+            self.networkThread = threadUdp.ThreadUdp(self.datalineSettings, self)
             print('Started UDP.')
         elif self.datalineSettings["protocolType"] == 'raw':
-            self.networkThread = threads.threadUdp.ThreadUdp(self.datalineSettings, self)
+            self.networkThread = threadUdp.ThreadUdp(self.datalineSettings, self)
             print('Started UDP-raw.')
         else:
-            self.networkThread = threads.threadUdp.ThreadUdp(self.datalineSettings, self)
+            self.networkThread = threadUdp.ThreadUdp(self.datalineSettings, self)
             print('Started UDP.')
 
         self.networkThread.signalSetStateLabelNorm.connect(self.setStateLabelNorm)
@@ -364,7 +368,7 @@ class WindowDatalineWork(windows.windowProfiledWindow.WindowProfiledWindow):
 
 
     @pyqtSlot(str)
-    def setStateLabelNorm(self, stateStrShort = _('Norm')) -> None:
+    def setStateLabelNorm(self, stateStrShort=_('Norm')) -> None:
         self.labelNetStateCurrent.setText(stateStrShort)
         self.labelNetStateCurrent.setStyleSheet('QLabel {background-color : limegreen; }')
 
@@ -378,8 +382,9 @@ class WindowDatalineWork(windows.windowProfiledWindow.WindowProfiledWindow):
 
     @pyqtSlot()
     def showDatalineSettigsWindow(self) -> None:
-        if self.datalineSettingsWindowIsShown == False:
-            datalineSettingsEditor = windows.windowDatalineSettings.WindowDatalineSettings(self.profileTitle, self)
+        if not self.datalineSettingsWindowIsShown:
+            datalineSettingsEditor = windowDatalineSettings.WindowDatalineSettings(self.profileTitle, self)
+            datalineSettingsEditor.exec_()
             self.datalineSettingsWindowIsShown = True
 
 
@@ -439,7 +444,7 @@ class WindowDatalineWork(windows.windowProfiledWindow.WindowProfiledWindow):
             msgToSend = self.responseManager.setIdInOutgoingMsg(msgToSend)
             print("After id", msgToSend)
         if self.autofillCrc:
-            crcHandler = handlers.handlerCrc.HandlerCrc(self.profileTitle)
+            crcHandler = handlerCrc.HandlerCrc(self.profileTitle)
             msgToSend = crcHandler.getMsgWithCrc(msgToSend)
             print("After crc", msgToSend)
 
@@ -480,7 +485,7 @@ class WindowDatalineWork(windows.windowProfiledWindow.WindowProfiledWindow):
 
     @pyqtSlot()
     def createNamedMsg(self) -> None:
-        namedMsgEditor = windows.windowNamedMsgEditor.WindowNamedMsgEditor(self.profileTitle)
+        namedMsgEditor = windowNamedMsgEditor.WindowNamedMsgEditor(self.profileTitle)
         namedMsgEditor.signalNamedMsgAdded.connect(self.addNamedMsgToDataModel)
         namedMsgEditor.exec_()
 
@@ -530,7 +535,7 @@ class WindowDatalineWork(windows.windowProfiledWindow.WindowProfiledWindow):
 
 
     def updateDatalineSettings(self) -> None:
-        datalineManager = managers.managerDatalineSettings.ManagerDatalineSettings(self.profileTitle)
+        datalineManager = managerDatalineSettings.ManagerDatalineSettings(self.profileTitle)
         datalineTitle = self.datalineSettings["title"]
         self.datalineSettings = datalineManager.getDatalineSettingsByDatalineTitle(datalineTitle)
 
@@ -545,7 +550,7 @@ class WindowDatalineWork(windows.windowProfiledWindow.WindowProfiledWindow):
             clientThread.updateReceiptingSettings()
 
 
-    def addMsgToLogger(self, msg: str, stringComment= '') -> None:
+    def addMsgToLogger(self, msg: str, stringComment='') -> None:
         strTime = self.getStrTime()
 
         msgStr = self.getPreparedMsgStr(msg)
@@ -558,13 +563,12 @@ class WindowDatalineWork(windows.windowProfiledWindow.WindowProfiledWindow):
         datalineTitleStr = " {}".format(self.title)
         indentStr = ":\n             "
         loggerMsg = strTime + ', ' \
-                                  + stringComment \
-                                  + datalineTitleStr \
-                                  + indentStr \
-                                  + msgStr
+                            + stringComment \
+                            + datalineTitleStr \
+                            + indentStr \
+                            + msgStr
 
-        parsingNecessary = (msgStr != '' and
-                           (_('sent') in stringComment or _('received') in stringComment))
+        parsingNecessary = (msgStr != '' and (_('sent') in stringComment or _('received') in stringComment))
 
         if parsingNecessary:
             loggerMsg = loggerMsg + self.msgParser.getParsedMsgStrFromMsg(msgStr)
@@ -650,4 +654,3 @@ class WindowDatalineWork(windows.windowProfiledWindow.WindowProfiledWindow):
         self.settings.endGroup()
 
         self.settings.endGroup()
-

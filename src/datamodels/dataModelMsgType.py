@@ -1,10 +1,8 @@
 import gettext
 
 from PyQt5.Qt import Qt
-from PyQt5.QtCore import QAbstractTableModel, QVariant, QModelIndex
+from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant
 from PyQt5.QtGui import QBrush
-
-import handlers.handlerString
 
 _ = gettext.gettext
 
@@ -39,7 +37,7 @@ class DataModelMsgType(QAbstractTableModel):
 
     def changeLengthDisplayMode(self) -> None:
         self.lengthDisplayModeBytes = not self.lengthDisplayModeBytes
-        self.layoutChanged.emit()
+        self.layoutChanged().emit()
 
 
     def setData(self, index, value, role) -> bool:
@@ -145,24 +143,6 @@ class DataModelMsgType(QAbstractTableModel):
             return True
 
 
-    # def swapWithFieldTitleCoincidesWithOwnFieldTitle(self, index, swapWithFieldTitle):
-    #     field = self.fieldDescrList[index.column()]
-    #
-    #     if field["fieldTitle"] == swapWithFieldTitle:
-    #         return True
-    #
-    #     return False
-    #
-    # def correctOtherSwapFildValuesIfNeeded(self, index, swapWithFieldTitle):
-    #     changedField = self.fieldDescrList[index.column()]
-    #
-    #     for fieldDescr in self.fieldDescrList:
-    #         if fieldDescr != changedField and fieldDescr.fieldToSwapWithInAutoresp == swapWithFieldTitle:
-    #             fieldDescr.fieldToSwapWithInAutoresp = ''
-    #         if fieldDescr.title == swapWithFieldTitle:
-    #             fieldDescr.fieldToSwapWithInAutoresp = changedfield["fieldTitle"]
-
-
     def editingFieldValues(self, index, role) -> bool:
         field = self.fieldDescrList[index.column()]
         fieldRowsCount = NONE_VALUE_ROWS_COUNT + len(field["fieldValuesList"])
@@ -196,9 +176,9 @@ class DataModelMsgType(QAbstractTableModel):
 
 
     def newFieldValueIsValid(self, index, value) -> bool:
-        if self.enteredStringForNewFieldValueIsValid(value) and \
-           self.newValueIsNotInUseAlready(index, value)     and \
-           self.newValueWithinFieldLengthRange(index, value):
+        if (self.enteredStringForNewFieldValueIsValid(value) and
+                self.newValueIsNotInUseAlready(index, value) and
+                self.newValueWithinFieldLengthRange(index, value)):
             return True
         else:
             return False
@@ -230,7 +210,10 @@ class DataModelMsgType(QAbstractTableModel):
         hexLen = int(field["fieldLength"]) // 4
 
         newStrHex = enteredHexStrForNewValue[:hexLen]
-        currentFieldValue = newStrHex + ' - ' + enteredStrForNewValueMeaning
+        newFieldValue = newStrHex + ' - ' + enteredStrForNewValueMeaning
+
+        fieldValuesList = field["fieldValuesList"]
+        fieldValuesList[index.row() - NONE_VALUE_ROWS_COUNT] = newFieldValue
 
 
     def updateFieldValueAsDict(self, index, value) -> None:
@@ -252,7 +235,6 @@ class DataModelMsgType(QAbstractTableModel):
 
     def getStrHexForNewValue(self, index, value) -> str:
         field = self.fieldDescrList[index.column()]
-        binLen = int(field["fieldLength"])
 
         parsedList = value.split(" - ", 1)
         enteredHexStrForNewValue = parsedList[0]
@@ -353,7 +335,6 @@ class DataModelMsgType(QAbstractTableModel):
             result = True
 
         return result
-
 
 
     def rowCount(self, parent=None) -> int:
@@ -584,8 +565,6 @@ class DataModelMsgType(QAbstractTableModel):
 
         self.endInsertColumns()
 
-        return True
-
 
     def removeColumn(self, column) -> bool:
         self.removeColumns(column, 1)
@@ -637,4 +616,3 @@ class DataModelMsgType(QAbstractTableModel):
         self.endRemoveRows()
 
         return True
-

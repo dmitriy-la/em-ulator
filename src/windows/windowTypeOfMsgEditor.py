@@ -1,36 +1,36 @@
-import gettext
 import copy
+import gettext
 
 from PyQt5.Qt import Qt
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QModelIndex, QSize
-from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtWidgets import QAbstractItemView, QTableView, QHeaderView
+from PyQt5.QtCore import QModelIndex, QSize, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QAbstractItemView, QHeaderView, QTableView
 from PyQt5.QtWidgets import QCheckBox, QComboBox, QGroupBox, QLabel, QLineEdit, QPushButton, QSpinBox
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout
 from PyQt5.QtWidgets import QInputDialog, QMessageBox
 
 
-import datamodels.dataModelMsgType
-import datamodels.dataModelValues
-import delegates.delegateComboBox
-import delegates.delegateCheckBox
-import handlers.handlerMsgCreator
-import managers.managerMsgFormats
-import windows.windowFieldEditor
-import windows.windowProfiledWindow
+import src.datamodels.dataModelMsgType as dataModelMsgType
+import src.datamodels.dataModelValues as dataModelValues
+import src.delegates.delegateCheckBox as delegateCheckBox
+import src.delegates.delegateComboBox as delegateComboBox
+import src.handlers.handlerMsgCreator as handlerMsgCreator
+import src.managers.managerMsgFormats as managerMsgFormats
+import src.windows.windowFieldEditor as windowFieldEditor
+import src.windows.windowProfiledWindow as windowProfiledWindow
 
 
 _ = gettext.gettext
 
 
-class WindowTypeOfMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
+class WindowTypeOfMsgEditor(windowProfiledWindow.WindowProfiledWindow):
     signalMsgTypeEditorWindowClosed = pyqtSignal()
 
     def __init__(self, profileTitle: str, msgType='', parent=None):
         super().__init__(profileTitle, parent)
         self.msgTypeTitle = msgType
-        self.fieldsModel = datamodels.dataModelMsgType.DataModelMsgType(self.msgTypeTitle)
-        self.valueModel = datamodels.dataModelValues.DataModelValues()
+        self.fieldsModel = dataModelMsgType.DataModelMsgType(self.msgTypeTitle)
+        self.valueModel = dataModelValues.DataModelValues()
 
         self.initUI()
 
@@ -296,7 +296,7 @@ class WindowTypeOfMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
         vLayout.addLayout(hButtonLayout)
 
 
-    def setDataForMsgType(self, msgType =''):
+    def setDataForMsgType(self, msgType=''):
         if msgType == '':
             return
 
@@ -508,7 +508,7 @@ class WindowTypeOfMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
     @pyqtSlot()
     def onClickStartFieldEditorWindow(self):
-        self.fieldEditor = windows.windowFieldEditor.WindowFieldEditor(self.profileTitle)
+        self.fieldEditor = windowFieldEditor.WindowFieldEditor(self.profileTitle)
         self.fieldEditor.signalFieldAddedFromFieldEditor.connect(self.addNewField)
 
 
@@ -528,7 +528,7 @@ class WindowTypeOfMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
 
     def addComboBoxToRow(self, choices: list, rowNum: int):
-        comboBox = delegates.delegateComboBox.DelegateComboBox(self.fieldsModel, choices)
+        comboBox = delegateComboBox.DelegateComboBox(self.fieldsModel, choices)
 
         self.tableView.setItemDelegateForRow(rowNum, comboBox)
 
@@ -539,7 +539,7 @@ class WindowTypeOfMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
 
     def addCheckBoxToRow(self, rowNum: int):
-        checkBox = delegates.delegateCheckBox.DelegateCheckBox(self.tableView)
+        checkBox = delegateCheckBox.DelegateCheckBox(self.tableView)
         self.tableView.setItemDelegateForRow(rowNum, checkBox)
 
 
@@ -610,12 +610,13 @@ class WindowTypeOfMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
 
     def userEnteredDataIsValid(self) -> bool:
-        if      self.allFieldTitlesAreUnique()                   \
-            and self.overallMsgLengthIsMultipleOfEight()         \
-            and self.msgTypeFieldIsSetCorrectly()                \
-            and self.fieldTypeValueIsUnique()                    \
-            and self.noUndefFieldIsPlacedInTheMiddleOfBitFields()\
-            and self.fewFieldsOfUndefLengthHaveSeparator():
+        dataValidationResult = (self.allFieldTitlesAreUnique() and
+                                self.overallMsgLengthIsMultipleOfEight() and
+                                self.msgTypeFieldIsSetCorrectly() and
+                                self.fieldTypeValueIsUnique() and
+                                self.noUndefFieldIsPlacedInTheMiddleOfBitFields() and
+                                self.fewFieldsOfUndefLengthHaveSeparator())
+        if dataValidationResult:
             return True
         else:
             print("ERROR: User-entered data is not valid")
@@ -646,7 +647,7 @@ class WindowTypeOfMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
 
     def fieldTypeValueIsUnique(self):
-        formatsManager = managers.managerMsgFormats.ManagerMsgFormats(self.profileTitle)
+        formatsManager = managerMsgFormats.ManagerMsgFormats(self.profileTitle)
         listOfTypesValues = formatsManager.getListOfTypesValues()
 
         intListOfTypesValues = list(map(int, listOfTypesValues))
@@ -731,8 +732,8 @@ class WindowTypeOfMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
         listOfAllMsgTypeTitles = self.formatManager.getListOfAllMsgTypeTitles()
 
         if msgTypeTitle in listOfAllMsgTypeTitles and not self.workingInEditMode:
-            userReply = QMessageBox.question(self, 'Save', _('Message type with this title already exists! Overwright?'),
-                                                  QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            userReply = QMessageBox.question(self, 'Save', _('Msg type with this title already exists! Overwright?'),
+                                             QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
             if userReply == QMessageBox.No:
                 result = False
             else:
@@ -760,7 +761,7 @@ class WindowTypeOfMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
         else:
             result = False
             self.showErrorMessageBox(_("Sum field length does not fit into whole byte."),
-                              _('Whole length must be multiplicity of 8 - check each field\'s length.'))
+                                     _('Whole length must be multiplicity of 8 - check each field\'s length.'))
 
         return result
 
@@ -791,7 +792,7 @@ class WindowTypeOfMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
         return result
 
 
-    def appendNewMsgTypeToMsgFormatsFile(self, msgTypeTitle = ""):
+    def appendNewMsgTypeToMsgFormatsFile(self, msgTypeTitle=""):
         fieldDescrsListOfNewMsgType = self.fieldsModel.fieldDescrList
 
         if msgTypeTitle == "":
@@ -816,7 +817,7 @@ class WindowTypeOfMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
 
     def createExampleMsgByDict(self, msgTypeDict: dict):
-        msgCreator = handlers.handlerMsgCreator.HandlerMsgCreator(self.profileTitle)
+        msgCreator = handlerMsgCreator.HandlerMsgCreator(self.profileTitle)
         msgString = msgCreator.getExampleMsgFromMsgTypeDict(msgTypeDict)
 
         text = _('MSG example: ')

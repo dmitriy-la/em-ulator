@@ -1,17 +1,18 @@
 import gettext
 
 from PyQt5.Qt import Qt
-from PyQt5.QtWidgets import QLabel, QLineEdit, QGroupBox, QHBoxLayout, QVBoxLayout, QGridLayout, QComboBox, QSpinBox, QLayout
-from PyQt5.QtWidgets import QPushButton, QStackedWidget
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtWidgets import QComboBox, QGridLayout, QGroupBox, QHBoxLayout
+from PyQt5.QtWidgets import QLabel, QLayout, QLineEdit, QPushButton
+from PyQt5.QtWidgets import QSpinBox, QStackedWidget, QVBoxLayout
 
-import handlers.handlerString
-import managers.managerAutoresponseSettings
-import managers.managerNamedMsg
-import managers.managerNamedRegexp
-import windows.windowNamedMsgEditor
-import windows.windowNamedRegexpEditor
-import windows.windowProfiledWindow
+import src.handlers.handlerString as handlerString
+import src.managers.managerAutoresponseSettings as managerAutoresponseSettings
+import src.managers.managerNamedMsg as managerNamedMsg
+import src.managers.managerNamedRegexp as managerNamedRegexp
+import src.windows.windowNamedMsgEditor as windowNamedMsgEditor
+import src.windows.windowNamedRegexpEditor as windowNamedRegexpEditor
+import src.windows.windowProfiledWindow as windowProfiledWindow
 
 
 _ = gettext.gettext
@@ -25,7 +26,7 @@ INDEX_OF_CONDITION_TYPE_TIME_PASSED_AFTER_SENDING_MSG = 4
 INDEX_OF_CONDITION_TYPE_COMPOSITE_CONDITION = 5
 
 
-class WindowAutorespConditionEditor(windows.windowProfiledWindow.WindowProfiledWindow):
+class WindowAutorespConditionEditor(windowProfiledWindow.WindowProfiledWindow):
     signalNewCondCreated = pyqtSignal(dict)
 
     def __init__(self, profileTitle: str, condTitleToEdit='', parent=None):
@@ -38,11 +39,11 @@ class WindowAutorespConditionEditor(windows.windowProfiledWindow.WindowProfiledW
         self.comboBoxCondList = []
         self.comboBoxCondLineCounter = 0
 
-        self.managerNamedMsg = managers.managerNamedMsg.ManagerNamedMsg(self.profileTitle)
+        self.managerNamedMsg = managerNamedMsg.ManagerNamedMsg(self.profileTitle)
 
-        self.managerNamedRegexp = managers.managerNamedRegexp.ManagerNamedRegexp(self.profileTitle)
+        self.managerNamedRegexp = managerNamedRegexp.ManagerNamedRegexp(self.profileTitle)
 
-        self.managerAutorespSettings = managers.managerAutoresponseSettings.ManagerAutoresponseSettings(self.profileTitle)
+        self.managerAutorespSettings = managerAutoresponseSettings.ManagerAutoresponseSettings(self.profileTitle)
 
         self.initUI()
 
@@ -145,12 +146,13 @@ class WindowAutorespConditionEditor(windows.windowProfiledWindow.WindowProfiledW
                                                      groupBoxForCondTypeFewMsgReceived)
 
         groupBoxForCondTypeTimePassedAfterReceiveMsg = self.getGroupBoxForCondTypeTimePassedAfterReceiveMsg()
-        self.stackedWidgetsForCondTypes.insertWidget(INDEX_OF_CONDITION_TYPE_TIME_PASSED_AFTER_RECEIVING_MSG,
-                                         groupBoxForCondTypeTimePassedAfterReceiveMsg)
+        insertArgs = [INDEX_OF_CONDITION_TYPE_TIME_PASSED_AFTER_RECEIVING_MSG,
+                      groupBoxForCondTypeTimePassedAfterReceiveMsg]
+        self.stackedWidgetsForCondTypes.insertWidget(*insertArgs)
 
         groupBoxForCondTypeTimePassedAfterSendMsg = self.getGroupBoxForCondTypeTimePassedAfterSendMsg()
-        self.stackedWidgetsForCondTypes.insertWidget(INDEX_OF_CONDITION_TYPE_TIME_PASSED_AFTER_SENDING_MSG,
-                                         groupBoxForCondTypeTimePassedAfterSendMsg)
+        insertArgs = [INDEX_OF_CONDITION_TYPE_TIME_PASSED_AFTER_SENDING_MSG, groupBoxForCondTypeTimePassedAfterSendMsg]
+        self.stackedWidgetsForCondTypes.insertWidget(*insertArgs)
 
         groupBoxForCondTypeCompositeConditions = self.getGroupBoxForForCondTypeCompositeConditions()
         self.stackedWidgetsForCondTypes.insertWidget(INDEX_OF_CONDITION_TYPE_COMPOSITE_CONDITION,
@@ -504,9 +506,9 @@ class WindowAutorespConditionEditor(windows.windowProfiledWindow.WindowProfiledW
 
     def conditionTitleIsNotUnique(self, condTitle: str) -> bool:
         allConditionTitlesList = self.managerAutorespSettings.getAllConditionTitlesList()
-        
+
         if condTitle in allConditionTitlesList:
-            stringHandler = handlers.handlerString.HandlerString()
+            stringHandler = handlerString.HandlerString()
             strCondTitlesList = stringHandler.getStrOrderedListFromList(allConditionTitlesList)
 
             self.showErrorMessageBox(_('Condition title is already in use!'),
@@ -542,11 +544,11 @@ class WindowAutorespConditionEditor(windows.windowProfiledWindow.WindowProfiledW
 
         if currentTypeIndex == INDEX_OF_CONDITION_TYPE_TIME_PASSED_AFTER_START:
             conditionDict = self.getCondDictForCondTypeTimePassedAfterStart()
-        elif currentTypeIndex == INDEX_OF_CONDITION_TYPE_RECEIVED_SINGLE_MSG or \
-             currentTypeIndex == INDEX_OF_CONDITION_TYPE_RECEIVED_FEW_MSG:
+        elif (currentTypeIndex == INDEX_OF_CONDITION_TYPE_RECEIVED_SINGLE_MSG or
+              currentTypeIndex == INDEX_OF_CONDITION_TYPE_RECEIVED_FEW_MSG):
             conditionDict = self.getCondDictForCondTypeReceivedOneOrFewMsg()
-        elif currentTypeIndex == INDEX_OF_CONDITION_TYPE_TIME_PASSED_AFTER_RECEIVING_MSG or \
-             currentTypeIndex == INDEX_OF_CONDITION_TYPE_TIME_PASSED_AFTER_SENDING_MSG:
+        elif (currentTypeIndex == INDEX_OF_CONDITION_TYPE_TIME_PASSED_AFTER_RECEIVING_MSG or
+              currentTypeIndex == INDEX_OF_CONDITION_TYPE_TIME_PASSED_AFTER_SENDING_MSG):
             conditionDict = self.getCondDictForCondTypeTimePassedAfterSendOrReceive()
         elif currentTypeIndex == INDEX_OF_CONDITION_TYPE_COMPOSITE_CONDITION:
             conditionDict = self.getCondDictForCondTypeCompositeCondition()
@@ -739,14 +741,14 @@ class WindowAutorespConditionEditor(windows.windowProfiledWindow.WindowProfiledW
 
     @pyqtSlot()
     def createNewNamedRegexp(self) -> None:
-        regexpCreator =  windows.windowNamedRegexpEditor.WindowNamedRegexpEditor(self.profileTitle)
+        regexpCreator = windowNamedRegexpEditor.WindowNamedRegexpEditor(self.profileTitle)
         regexpCreator.signalNamedRegexpAdded.connect(self.addNewNamedRegexp)
         regexpCreator.exec_()
 
 
     @pyqtSlot()
     def createNewNamedMsg(self) -> None:
-        window = windows.windowNamedMsgEditor.WindowNamedMsgEditor(self.profileTitle)
+        window = windowNamedMsgEditor.WindowNamedMsgEditor(self.profileTitle)
         window.signalNamedMsgAdded.connect(self.addNewNamedMsg)
         window.exec_()
 
@@ -754,9 +756,7 @@ class WindowAutorespConditionEditor(windows.windowProfiledWindow.WindowProfiledW
     @pyqtSlot(dict)
     def addNewNamedMsg(self, namedMsgDict: dict) -> None:
         """
-
-        :param title:
-        :param msgHex:
+        :param namedMsgDict:
         :return:
         """
         namedMsgTitle = namedMsgDict["msgTitle"]

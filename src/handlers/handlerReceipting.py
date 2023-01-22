@@ -1,15 +1,14 @@
-from PyQt5.QtCore import pyqtSignal, QObject
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtCore import QObject, pyqtSignal
 
-import handlers.handlerCrc
-import handlers.handlerMsgCreator
-import handlers.handlerMsgLength
-import handlers.handlerMsgParse
-import handlers.handlerString
-import managers.managerDatalineSettings
-import managers.managerMsgFormats
-import managers.managerProfiles
-import threads
+import src.handlers.handlerCrc as handlerCrc
+import src.handlers.handlerMsgCreator as handlerMsgCreator
+import src.handlers.handlerMsgLength as handlerMsgLength
+import src.handlers.handlerMsgParse as handlerMsgParse
+import src.handlers.handlerString as handlerString
+import src.managers.managerDatalineSettings as managerDatalineSettings
+import src.managers.managerMsgFormats as managerMsgFormats
+import src.managers.managerProfiles as managerProfiles
+import src.threads.threadTimer as threadTimer
 
 
 class HandlerReceipting(QObject):
@@ -29,12 +28,15 @@ class HandlerReceipting(QObject):
 
         self.listOfBinFieldValues = []
 
-        self.formatsManager = managers.managerMsgFormats.ManagerMsgFormats(self.profileTitle)
+        self.formatsManager = managerMsgFormats.ManagerMsgFormats(self.profileTitle)
         self.msgReceiptDict = self.formatsManager.getInfoForReceiptMsg()
 
-        self.parser = handlers.handlerMsgParse.HandlerMsgParse(self.profileTitle)
+        self.lengthHandler = handlerMsgLength.HandlerMsgLength(self.profileTitle)
+        self.crcHandler = handlerCrc.HandlerCrc(self.profileTitle)
 
-        self.managerDatalineSettings = managers.managerDatalineSettings.ManagerDatalineSettings(profileTitle)
+        self.parser = handlerMsgParse.HandlerMsgParse(self.profileTitle)
+
+        self.managerDatalineSettings = managerDatalineSettings.ManagerDatalineSettings(profileTitle)
         self.datalineSettings = self.managerDatalineSettings.getDatalineSettingsByDatalineTitle(datalineTitle)
 
         self.receiptToutMs = self.datalineSettings["toutMs"]
@@ -43,7 +45,7 @@ class HandlerReceipting(QObject):
 
         self.setSettingsFilePathsForProfile(self.profileTitle)
 
-        profileManager = managers.managerProfiles.ManagerProfiles(self.profileTitle)
+        profileManager = managerProfiles.ManagerProfiles(self.profileTitle)
         self.maskForFormingReceiptType = profileManager.getMaskForFormingReceiptType()
         self.sendMode = profileManager.getSendMode()
 
@@ -68,15 +70,14 @@ class HandlerReceipting(QObject):
                 self.proccessFieldDescrInReceipt(fieldIndex, fieldDescr)
 
             msgTypeTitle = self.msgReceiptDict["msgTypeTitle"]
-            msgCreator = handlers.handlerMsgCreator.HandlerMsgCreator(self.profileTitle)
+            msgCreator = handlerMsgCreator.HandlerMsgCreator(self.profileTitle)
             msgCreator.setListOfFieldValuesFromList(self.listOfBinFieldValues)
             receipt = msgCreator.getMsgFromListOfPreviouslySetBinFieldsValuesInMsgType(msgTypeTitle)
 
-            msgLengthHandler = handlers.handlerMsgLength.HandlerMsgLength(self.profileTitle)
+            msgLengthHandler = handlerMsgLength.HandlerMsgLength(self.profileTitle)
             receipt = msgLengthHandler.setLengthInMsg(receipt)
 
-            crcHandler = handlers.handlerCrc.HandlerCrc(self.profileTitle)
-            receipt = crcHandler.getMsgWithCrc(receipt)
+            receipt = self.crcHandler.getMsgWithCrc(receipt)
         else:
             receipt = msg
 
@@ -91,8 +92,8 @@ class HandlerReceipting(QObject):
         fieldDescrsList = self.msgReceiptDict["fieldDescrsList"]
         fieldDescrsListCount = len(fieldDescrsList)
         binFieldValuesListCount = len(self.listOfBinFieldValues)
-        fieldDescrListDoesntMatchFieldValuesList = fieldDescrsListCount != binFieldValuesListCount and\
-                                                   self.msgReceiptDict["isReceipt"] is False
+        fieldDescrListDoesntMatchFieldValuesList = (fieldDescrsListCount != binFieldValuesListCount and
+                                                    self.msgReceiptDict["isReceipt"] is False)
 
         if msgIsReceipt or msgTypeDictIsAbsent or msgIsNotParsable or fieldDescrListDoesntMatchFieldValuesList:
             # print("Receipt is not retrievable.")
@@ -134,7 +135,7 @@ class HandlerReceipting(QObject):
 
 
     def getBinFieldValueForFieldWithRoleType(self, fieldDescr: dict, fieldIndex: int) -> str:
-        strHandler = handlers.handlerString.HandlerString()
+        strHandler = handlerString.HandlerString()
 
         if self.maskForFormingReceiptType != "":
             intTypeWithMask = int(self.listOfBinFieldValues[fieldIndex], 16) | int(self.maskForFormingReceiptType, 16)
@@ -155,8 +156,8 @@ class HandlerReceipting(QObject):
 
         if not self.alreadyProcessingMsgWithId(msgId):
             repsCount = 0
-            receiptTimer = threads.threadTimer.ThreadTimer(self.proccesTimeoutSignalForMsgWithId, msgId,
-                                                           self.receiptToutMs, self.resendRepeats)
+            timerArgs = [self.proccesTimeoutSignalForMsgWithId, msgId, self.receiptToutMs, self.resendRepeats]
+            receiptTimer = threadTimer.ThreadTimer(*timerArgs)
 
             dictForTrackingMsgsAndReceipts = {"msgId":        msgId,
                                               "msgSent":      msgSent,
@@ -195,8 +196,7 @@ class HandlerReceipting(QObject):
             return ''
         else:
             receipt = self.getReceiptForMsg(msgReceived)
-            crcHandler = handlers.handlerCrc.HandlerCrc(self.profileTitle)
-            receipt = crcHandler.getMsgWithCrc(receipt)
+            receipt = self.crcHandler.getMsgWithCrc(receipt)
 
             # print("Receipt:", receipt)
             return receipt

@@ -1,14 +1,13 @@
 import gettext
 
 from PyQt5.Qt import Qt
-from PyQt5.QtCore import QAbstractTableModel, QVariant, QModelIndex
+from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant
 
 _ = gettext.gettext
 
 COLUMN_INDEX_OF_MSG_TYPE_TITLE = 0
 COLUMN_INDEX_OF_IF_MSG_TYPE_IS_RECEIPT = 1
 COLUMN_INDEX_OF_IF_MSG_TYPE_SEND_ALLOWED = 2
-
 COLUMN_INDEX_OF_HEX_FOR_MSG_TYPE = 3
 
 
@@ -25,11 +24,11 @@ class DataModelMsgTypes(QAbstractTableModel):
         return self.rows
 
 
-    def columnCount(self, parent)-> int:
+    def columnCount(self, parent) -> int:
         return self.columns
 
 
-    def headerData(self, section, orientation, role) ->QVariant:
+    def headerData(self, section, orientation, role):
         if role != Qt.DisplayRole:
             return QVariant()
         if orientation == Qt.Vertical:
@@ -131,7 +130,7 @@ class DataModelMsgTypes(QAbstractTableModel):
             return False
 
 
-    def setData(self, index, value, role = Qt.DisplayRole) -> bool:
+    def setData(self, index, value, role=Qt.DisplayRole) -> bool:
         result = False
 
         if not index.isValid():

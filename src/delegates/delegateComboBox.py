@@ -1,5 +1,5 @@
-from PyQt5.Qt import Qt, QObject, pyqtSignal, QModelIndex, QApplication, pyqtSlot
-from PyQt5.QtWidgets import QItemDelegate, QComboBox, QStyleOptionComboBox, QStyle
+from PyQt5.Qt import QApplication, QModelIndex, QObject, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtWidgets import QComboBox, QItemDelegate, QStyle, QStyleOptionComboBox
 
 
 class Communicate(QObject):

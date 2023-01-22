@@ -1,5 +1,5 @@
-from PyQt5.Qt import Qt, QApplication, QEvent, QRect, QPoint
-from PyQt5.QtWidgets import QStyledItemDelegate, QItemDelegate, QStyleOptionButton, QStyle
+from PyQt5.Qt import QApplication, QEvent, QPoint, QRect, Qt
+from PyQt5.QtWidgets import QItemDelegate, QStyle, QStyleOptionButton, QStyledItemDelegate, QWidget
 
 
 class DelegateCheckBox(QStyledItemDelegate):
@@ -14,9 +14,8 @@ class DelegateCheckBox(QStyledItemDelegate):
     def createEditor(self, parent, option, index) -> None:
         """
         Important, otherwise an editor is created if the user clicks in this cell.
-        ** Need to hook up a signal to the model
+        Need to hook up a signal to the model.
         """
-
         return None
 
 
@@ -38,7 +37,7 @@ class DelegateCheckBox(QStyledItemDelegate):
 
         check_box_style_option = QStyleOptionButton()
 
-        if int(index.flags() & Qt.ItemIsEditable) > 0:
+        if int(index.flags()) & Qt.ItemIsEditable > 0:
             check_box_style_option.state |= QStyle.State_Enabled
         else:
             check_box_style_option.state |= QStyle.State_ReadOnly
@@ -61,7 +60,7 @@ class DelegateCheckBox(QStyledItemDelegate):
         if user presses the left mousebutton or presses
         Key_Space or Key_Select and this cell is editable. Otherwise do nothing.
         """
-        if not int(index.flags() & Qt.ItemIsEditable) > 0:
+        if not int(index.flags()) & Qt.ItemIsEditable > 0:
             return False
 
         # Do not change the checkbox-state
@@ -78,7 +77,7 @@ class DelegateCheckBox(QStyledItemDelegate):
         else:
             return False
 
-        self.setModelData(None, model, index)
+        self.setModelData(QWidget(), model, index)
         return True
 
 

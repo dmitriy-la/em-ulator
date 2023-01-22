@@ -1,8 +1,8 @@
 import importlib
 
-import handlers.handlerMsgParse
-import handlers.handlerString
-import managers.managerMsgFormats
+import src.handlers.handlerMsgParse as handlerMsgParse
+import src.handlers.handlerString as handlerString
+import src.managers.managerMsgFormats as managerMsgFormats
 
 
 class HandlerCrc(object):
@@ -13,7 +13,7 @@ class HandlerCrc(object):
         """
         self.profileTitle = profileTitle
 
-        self.formatManager = managers.managerMsgFormats.ManagerMsgFormats(self.profileTitle)
+        self.formatManager = managerMsgFormats.ManagerMsgFormats(self.profileTitle)
 
         self.calcCrcModule = importlib.import_module('__profiles__.' + self.profileTitle + '.calcCrc')
 
@@ -40,14 +40,14 @@ class HandlerCrc(object):
 
     def setCrcInMsg(self, msgWithoutCrc: str, hexCrc: str) -> str:
         if self.hexCrcIsValid(hexCrc) and self.msgIsParsable(msgWithoutCrc):
-            parser = handlers.handlerMsgParse.HandlerMsgParse(self.profileTitle)
+            parser = handlerMsgParse.HandlerMsgParse(self.profileTitle)
             msgType = parser.getMsgTypeFromMsg(msgWithoutCrc)
 
             crcFieldIndex = self.formatManager.getIndexOfFieldWithRoleCrcInMsgType(msgType)
             crcFieldLen = self.formatManager.getLengthOfFieldWithRoleCrcInMsgType(msgType)
 
-            stringHandler = handlers.handlerString.HandlerString()
-            strCrc = stringHandler.getBinaryStringOfSpecifiedBitLen(int(hexCrc, 16), crcFieldLen)
+            stringHandler = handlerString.HandlerString()
+            strCrc = stringHandler.getBinaryStringOfSpecifiedBitLen(hexCrc, crcFieldLen)
             strCrc = strCrc.zfill(crcFieldLen)
 
             listOfBinValues = parser.getListOfBinFieldValuesFromMsg(msgWithoutCrc)
@@ -68,7 +68,7 @@ class HandlerCrc(object):
 
 
     def msgIsParsable(self, msg) -> bool:
-        parser = handlers.handlerMsgParse.HandlerMsgParse(self.profileTitle)
+        parser = handlerMsgParse.HandlerMsgParse(self.profileTitle)
         listOfBinValues = parser.getListOfBinFieldValuesFromMsg(msg)
 
         if len(listOfBinValues) > 0:

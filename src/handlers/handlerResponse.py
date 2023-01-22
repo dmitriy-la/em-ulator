@@ -1,15 +1,15 @@
 import re
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
-import handlers.handlerId
-import handlers.handlerMsgParse
-import handlers.handlerString
-import managers.managerAutoresponseSettings
-import managers.managerMsgFormats
-import managers.managerNamedMsg
-import managers.managerNamedRegexp
-import threads.threadTimer
+import src.handlers.handlerId as handlerId
+import src.handlers.handlerMsgParse as handlerMsgParse
+import src.handlers.handlerString as handlerString
+import src.managers.managerAutoresponseSettings as managerAutoresponseSettings
+import src.managers.managerMsgFormats as managerMsgFormats
+import src.managers.managerNamedMsg as managerNamedMsg
+import src.managers.managerNamedRegexp as managerNamedRegexp
+import src.threads.threadTimer as threadTimer
 
 
 DEFAULT_AUTORESPONSE_MODE_TITLE = "initMode"
@@ -22,11 +22,11 @@ class HandlerResponse(QObject):
         super().__init__()
         self.profileTitle = profileTitle
 
-        self.msgParser = handlers.handlerMsgParse.HandlerMsgParse(self.profileTitle)
-        self.formatManager = managers.managerMsgFormats.ManagerMsgFormats(self.profileTitle)
-        self.managerAutorespSettings = managers.managerAutoresponseSettings.ManagerAutoresponseSettings(self.profileTitle)
-        self.managerNamedRegexp = managers.managerNamedRegexp.ManagerNamedRegexp(self.profileTitle)
-        self.managerNamedMsg = managers.managerNamedMsg.ManagerNamedMsg(self.profileTitle)
+        self.msgParser = handlerMsgParse.HandlerMsgParse(self.profileTitle)
+        self.formatManager = managerMsgFormats.ManagerMsgFormats(self.profileTitle)
+        self.managerAutorespSettings = managerAutoresponseSettings.ManagerAutoresponseSettings(self.profileTitle)
+        self.managerNamedRegexp = managerNamedRegexp.ManagerNamedRegexp(self.profileTitle)
+        self.managerNamedMsg = managerNamedMsg.ManagerNamedMsg(self.profileTitle)
 
         self.listOfAllAutorespModes = self.managerAutorespSettings.getAllAutorespModesList()
         self.condDescrList = self.managerAutorespSettings.getConditionList()
@@ -49,8 +49,8 @@ class HandlerResponse(QObject):
         self.startTimersAfterImitStart()
 
 
-    # TODO: Into class AutorespMode
     def getInitialListOfRegexpForNotedMsgs(self) -> list:
+        # TODO: Into class AutorespMode
         self.listOfRegexpAndReceiveFlagForNotedMsgs = []
 
         listOfConditionsForMode = self.getListOfNoneEmptyConditionsForCurrentMode()
@@ -115,8 +115,8 @@ class HandlerResponse(QObject):
         return listOfMsg
 
 
-    # TODO: Into class AutorespMode
     def getListOfActionToPerformAfterStart(self) -> list:
+        # TODO: Into class AutorespMode
         listOfActionsToPerformAfterStart = []
 
         listOfConditionsForMode = self.getListOfNoneEmptyConditionsForCurrentMode()
@@ -145,8 +145,8 @@ class HandlerResponse(QObject):
         return False
 
 
-    # TODO: Into class AutorespMode
     def factOfReceivingMsgShouldBeNoted(self, binMsg: str) -> bool:
+        # TODO: Into class AutorespMode
         for line in self.listOfRegexpAndReceiveFlagForNotedMsgs:
             regexp = line["regexp"]
             regexp = self.prepareRegexp(regexp)
@@ -168,8 +168,8 @@ class HandlerResponse(QObject):
         return regexp
 
 
-    # TODO: Into class AutorespMode
     def setOneOfNotedMsgsWasReceived(self, binMsg: str) -> None:
+        # TODO: Into class AutorespMode
         for line in self.listOfRegexpAndReceiveFlagForNotedMsgs:
             regexp = line["regexp"]
 
@@ -184,7 +184,7 @@ class HandlerResponse(QObject):
 
 
     def noteMsgIfNeeded(self, msg: str) -> None:
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
         binMsg = stringHandler.getWholeMsgBinStrFromHexStr(msg)
 
         if self.factOfReceivingMsgShouldBeNoted(binMsg):
@@ -196,7 +196,7 @@ class HandlerResponse(QObject):
             if mode['modeTitle'] == curModeTitle:
                 return mode
 
-        return {'modeTitle': "", "condList" : []}
+        return {'modeTitle': "", "condList": []}
 
 
     def proccessMsgReceived(self, msg) -> list:
@@ -248,10 +248,12 @@ class HandlerResponse(QObject):
     def getListOfCondDescrsOfTypeTimePassedAfterSendOrReceive(self) -> list:
         listOfConditionsActivelyUsedInCurrentMode = self.getListOfCondDescrsActivelyUsedInCurrentMode()
 
-        listOfCondDescrs = list(filter(lambda condDescr:
-                                       condDescr['condType'] == 'condTypeTimePassedAfterStartReceivingMsg' or
-                                       condDescr['condType'] == 'condTypeTimePassedAfterStartSendMsg',
-                                                listOfConditionsActivelyUsedInCurrentMode))
+        def condTypeIsTimePassedAfter(condDescr):
+            if (condDescr['condType'] == 'condTypeTimePassedAfterStartReceivingMsg' or
+                    condDescr['condType'] == 'condTypeTimePassedAfterStartSendMsg'):
+                return condDescr
+
+        listOfCondDescrs = list(filter(condTypeIsTimePassedAfter, listOfConditionsActivelyUsedInCurrentMode))
 
         return listOfCondDescrs
 
@@ -289,8 +291,11 @@ class HandlerResponse(QObject):
     def getListOfCondDescrsOfTypeTimePassedAfterStart(self) -> list:
         listOfConditionsActivelyUsedInCurrentMode = self.getListOfCondDescrsActivelyUsedInCurrentMode()
 
-        listOfCondDescrs = list(filter(lambda condDescr: condDescr['condType'] == 'condTypeTimePassedAfterStart',
-                                                listOfConditionsActivelyUsedInCurrentMode))
+        def getCondTypeFunc(condDescr):
+            if condDescr['condType'] == 'condTypeTimePassedAfterStart':
+                return condDescr
+
+        listOfCondDescrs = list(filter(getCondTypeFunc, listOfConditionsActivelyUsedInCurrentMode))
 
         return listOfCondDescrs
 
@@ -310,7 +315,7 @@ class HandlerResponse(QObject):
 
 
     def startCondTimer(self, condTitle: str, toutMs: int) -> None:
-        timer = threads.threadTimer.ThreadTimer(self.proccessTimerTimeout, condTitle, toutMs)
+        timer = threadTimer.ThreadTimer(self.proccessTimerTimeout, condTitle, toutMs)
         self.listOfTimers.append(timer)
         timer.start()
 
@@ -364,8 +369,8 @@ class HandlerResponse(QObject):
         elif actionType == 'actionTypeRespondWithReceivedMsg':
             listOfResponsesForAction.append(self.msgReceived)
         elif actionType == 'actionTypeRespondWithReceivedMsgWithAssigningFields':
-            msgReceivedWithFieldsAssigned = self.assignValuesToFieldsInReceivedMsg(self.msgReceived,
-                                        actionDescr['listOfFieldTitlesAndValuesToReplaceWhenRespondingWithReceivedMsg'])
+            args = [self.msgReceived, actionDescr['listOfFieldTitlesAndValuesToReplaceWhenRespondingWithReceivedMsg']]
+            msgReceivedWithFieldsAssigned = self.assignValuesToFieldsInReceivedMsg(*args)
             listOfResponsesForAction.append(msgReceivedWithFieldsAssigned)
         elif actionType == 'actionTypeRespondWithNamedMsg' or actionType == 'actionTypeRespondWithFewNamedMsg':
             listOfResponseTitles = actionDescr["listOfMsgToRespondWith"]
@@ -403,8 +408,8 @@ class HandlerResponse(QObject):
                 return action
 
 
-    # TODO: Into class AutorespMode
     def getListOfActionTitlesTriggeredByReceivingMsg(self, msg) -> list:
+        # TODO: Into class AutorespMode
         listOfActionsToPerform = []
 
         listOfConditionsForMode = self.getListOfNoneEmptyConditionsForCurrentMode()
@@ -414,7 +419,7 @@ class HandlerResponse(QObject):
 
             listOfActionsForCond = self.getListOfActionsToPerformForCondition(condTitle, msg)
 
-            if len(listOfActionsForCond) > 0 :
+            if len(listOfActionsForCond) > 0:
                 listOfActionsToPerform.extend(listOfActionsForCond)
 
         return listOfActionsToPerform
@@ -430,11 +435,11 @@ class HandlerResponse(QObject):
         return msg
 
 
-    # TODO: Into class AutorespMode
     def getListOfActionsToPerformForCondition(self, condTitle: str, msg: str) -> list:
+        # TODO: Into class AutorespMode
         listOfActionsToPerform = []
 
-        stringHandler = handlers.handlerString.HandlerString()
+        stringHandler = handlerString.HandlerString()
         binMsg = stringHandler.getWholeMsgBinStrFromHexStr(msg)
 
         condDescr = self.getCondDescrDictFromTitle(condTitle)
@@ -514,7 +519,7 @@ class HandlerResponse(QObject):
 
     def msgWasReceived(self, msgRegexp: str) -> bool:
         for regexpAndFlag in self.listOfRegexpAndReceiveFlagForNotedMsgs:
-            if regexpAndFlag["regexp"] == msgRegexp and regexpAndFlag["msgNoted"] == True:
+            if regexpAndFlag["regexp"] == msgRegexp and regexpAndFlag["msgNoted"] is True:
                 return True
         return False
 
@@ -524,8 +529,8 @@ class HandlerResponse(QObject):
 
         condRegexpTitlesList = condDescr["condRegexpTitlesList"]
 
-        regexpBinListToResetReceivedFlag = [self.managerNamedRegexp.getBinRegexpFromRegexpTitle(regexpTitle)
-                                           for regexpTitle in condRegexpTitlesList]
+        regexpBinListToResetReceivedFlag = [
+            self.managerNamedRegexp.getBinRegexpFromRegexpTitle(regexpTitle) for regexpTitle in condRegexpTitlesList]
 
         map(self.resetMsgNotedFlagIfNeeded, regexpBinListToResetReceivedFlag)
 
@@ -538,11 +543,10 @@ class HandlerResponse(QObject):
 
 
     def proccessMsgSent(self, msgSent: str) -> None:
-        listOfConditionsWithTypeTimePassedAfterSendMsg = self.getConditionsWithTypeTimePassedAfterSendMsg()
+        # listOfConditionsWithTypeTimePassedAfterSendMsg = self.getConditionsWithTypeTimePassedAfterSendMsg()
         self.noteMsgIfNeeded(msgSent)
 
         self.startTimersIfNeeded()
-
 
 
     def getConditionsWithTypeTimePassedAfterSendMsg(self) -> list:
@@ -644,7 +648,7 @@ class HandlerResponse(QObject):
         msgTypeTitle = self.msgParser.getMsgTypeFromMsg(msg)
         idForMsg = self.getOutgoingMsgId(msgTypeTitle)
 
-        idHandler = handlers.handlerId.HandlerId(self.profileTitle)
+        idHandler = handlerId.HandlerId(self.profileTitle)
         msg = idHandler.setIdInMsg(msg, str(idForMsg))
 
         return msg

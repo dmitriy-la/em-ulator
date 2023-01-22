@@ -1,25 +1,26 @@
 import gettext
 
 from PyQt5.Qt import Qt
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSize
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QAbstractItemView
-from PyQt5.QtWidgets import QButtonGroup, QCheckBox, QFrame, QGroupBox, QLabel, QLineEdit
-from PyQt5.QtWidgets import QPushButton, QRadioButton, QSpinBox, QTableView, QHeaderView
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtCore import QSize, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QAbstractItemView, QButtonGroup, QCheckBox, QFrame
+from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QHeaderView, QLabel
+from PyQt5.QtWidgets import QLineEdit, QPushButton, QRadioButton
+from PyQt5.QtWidgets import QSpinBox, QTableView, QVBoxLayout
 
-import datamodels.dataModelValues
-import widgets.bigIntSpinBox
-import windows.windowProfiledWindow
+import src.datamodels.dataModelValues as dataModelValues
+import src.widgets.bigIntSpinBox as bigIntSpinBox
+import src.windows.windowProfiledWindow as windowProfiledWindow
 
 _ = gettext.gettext
 
 
-class WindowFieldEditor(windows.windowProfiledWindow.WindowProfiledWindow):
+class WindowFieldEditor(windowProfiledWindow.WindowProfiledWindow):
     signalFieldAddedFromFieldEditor = pyqtSignal(dict)
 
     def __init__(self, profileTitle: str, parent=None):
         super().__init__(profileTitle, parent)
-        self.valueModel = datamodels.dataModelValues.DataModelValues()
+        self.valueModel = dataModelValues.DataModelValues()
 
         self.lengthModeBytes = False
 
@@ -164,7 +165,7 @@ class WindowFieldEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
 
     def addSpinBoxWithOneHexValue(self, hLayoutValuesEdit):
-        spinBoxValueHex = widgets.bigIntSpinBox.BigIntSpinBox(self.principalGroupBox)
+        spinBoxValueHex = bigIntSpinBox.BigIntSpinBox(self.principalGroupBox)
         # spinBoxValueHex.setDisplayIntegerBase(16)
         spinBoxValueHex.setValue(0)
         spinBoxValueHex.setMinimumWidth(90)

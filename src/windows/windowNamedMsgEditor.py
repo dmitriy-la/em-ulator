@@ -1,21 +1,21 @@
 import gettext
 
-# import PyQt5.Qt
 from PyQt5.Qt import Qt
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QRegExp, QObject
-from PyQt5.QtWidgets import QCheckBox, QComboBox, QGroupBox, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QSpinBox
-from PyQt5.QtWidgets import QTabWidget, QTabBar, QVBoxLayout, QWidget
+from PyQt5.QtCore import QObject, QRegExp, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtWidgets import QCheckBox, QComboBox, QGridLayout, QGroupBox
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QSpinBox
+from PyQt5.QtWidgets import QTabBar, QTabWidget, QVBoxLayout, QWidget
 
-import managers.managerNamedMsg
-import handlers.handlerMsgCreator
-import windows.windowProfiledWindow
+import src.handlers.handlerMsgCreator as handlerMsgCreator
+import src.managers.managerNamedMsg as managerNamedMsg
+import src.windows.windowProfiledWindow as windowProfiledWindow
 
 
 _ = gettext.gettext
 
 
-class WindowNamedMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
+class WindowNamedMsgEditor(windowProfiledWindow.WindowProfiledWindow):
     signalNamedMsgAdded = pyqtSignal(dict)
 
     def __init__(self, profileTitle: str, parent=None):
@@ -281,10 +281,10 @@ class WindowNamedMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
         self.tabs.currentChanged.connect(self.addNewTab)
         self.tabs.tabCloseRequested.connect(self.closeGroupedFieldTab)
 
-        self.tabs.tabBar().setTabButton(0, QTabBar.RightSide, None)
-        self.tabs.tabBar().setTabButton(0, QTabBar.LeftSide, None)
-        self.tabs.tabBar().setTabButton(1, QTabBar.RightSide, None)
-        self.tabs.tabBar().setTabButton(1, QTabBar.LeftSide, None)
+        self.tabs.tabBar().setTabButton(0, QTabBar.RightSide, QWidget())
+        self.tabs.tabBar().setTabButton(0, QTabBar.LeftSide, QWidget())
+        self.tabs.tabBar().setTabButton(1, QTabBar.RightSide, QWidget())
+        self.tabs.tabBar().setTabButton(1, QTabBar.LeftSide, QWidget())
 
 
     def getLabelFieldTitle(self, fieldDescr):
@@ -316,7 +316,7 @@ class WindowNamedMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
         currentMsgType = self.comboBoxCurrentMsgType.currentText()
 
-        msgCreator = handlers.handlerMsgCreator.HandlerMsgCreator(self.profileTitle)
+        msgCreator = handlerMsgCreator.HandlerMsgCreator(self.profileTitle)
         msgCreator.setListOfFieldValuesFromList(listOfFieldValues)
         strExampleMsg = msgCreator.getMsgFromListOfPreviouslySetHexFieldValuesInMsgType(currentMsgType)
 
@@ -382,7 +382,7 @@ class WindowNamedMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
         :return:
         """
         gridLayGroupedFields = QGridLayout(self)
-        gridLayGroupedFields.addWidget(labelFieldName, self.groupedFieldsLine, 0)
+        gridLayGroupedFields.addWidget(QLabel(labelFieldName), self.groupedFieldsLine, 0)
         gridLayGroupedFields.addWidget(widgetToAdd, self.groupedFieldsLine, 1)
 
         groupBoxGroupedFields = QGroupBox(self)
@@ -557,7 +557,7 @@ class WindowNamedMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
         if fieldLength != "undef.":
             fieldLengthInSymbols = int(fieldLength) // 4
-            widgetToReturn.setText("0"* fieldLengthInSymbols)
+            widgetToReturn.setText("0" * fieldLengthInSymbols)
 
         widgetToReturn.textChanged.connect(self.setResultingMsgString)
 
@@ -753,7 +753,7 @@ class WindowNamedMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
 
         dictForNewNamedMsg = {"msgTitle": msgTitle, "msgHex": msgHexStr}
 
-        managerNamedMsgList = managers.managerNamedMsg.ManagerNamedMsg(self.profileTitle)
+        managerNamedMsgList = managerNamedMsg.ManagerNamedMsg(self.profileTitle)
         managerNamedMsgList.addNewNamedMsg(dictForNewNamedMsg)
 
         self.signalNamedMsgAdded.emit(dictForNewNamedMsg)
@@ -803,7 +803,7 @@ class WindowNamedMsgEditor(windows.windowProfiledWindow.WindowProfiledWindow):
         listOfStr = msgHexStr.split(' ')
 
         currentMsgType = self.comboBoxCurrentMsgType.currentText()
-        msgCreator = handlers.handlerMsgCreator.HandlerMsgCreator(self.profileTitle)
+        msgCreator = handlerMsgCreator.HandlerMsgCreator(self.profileTitle)
         msgCreator.setMsgType(currentMsgType)
 
         for i in range(len(listOfStr)):
