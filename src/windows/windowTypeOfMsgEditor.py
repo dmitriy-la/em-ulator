@@ -625,25 +625,22 @@ class WindowTypeOfMsgEditor(windowProfiledWindow.WindowProfiledWindow):
 
     def msgTypeFieldIsSetCorrectly(self) -> bool:
         fieldList = self.fieldsModel.fieldDescrList
-        fieldsWithRoleTypeCounter = 0
 
         self.fieldsModel.dataChanged.emit(QModelIndex(), QModelIndex())
 
         errorHeader = _("Error: msg type error")
         errorText = _('Set role \'roleType\' for exactly one field with exactly one possible value')
 
-        for field in fieldList:
-            if 'roleType' in field.values():
-                fieldsWithRoleTypeCounter += 1
-                if len(field["fieldValuesList"]) != 1:
-                    self.showErrorMessageBox(errorHeader, errorText)
-                    return False
+        listOfFieldDescrsWithType = list(filter(lambda fieldDescr: fieldDescr["fieldRole"] == 'roleType', fieldList))
 
-        if fieldsWithRoleTypeCounter == 1:
-            return True
-        else:
+        if len(listOfFieldDescrsWithType) > 1 or len(listOfFieldDescrsWithType) == 0:
             self.showErrorMessageBox(errorHeader, errorText)
             return False
+        elif len(listOfFieldDescrsWithType[0]["fieldValuesList"]) != 1:
+            self.showErrorMessageBox(errorHeader, errorText)
+            return False
+        else:
+            return True
 
 
     def fieldTypeValueIsUnique(self):
@@ -678,11 +675,12 @@ class WindowTypeOfMsgEditor(windowProfiledWindow.WindowProfiledWindow):
     def getFieldTypeValue(self):
         fieldList = self.fieldsModel.fieldDescrList
 
-        for fieldDescr in fieldList:
-            if fieldDescr["fieldRole"] == 'roleType':
-                fieldTypeValueAndMeaning = fieldDescr["fieldValuesList"][0]
-                fieldTypeValue = fieldTypeValueAndMeaning["valueHex"]
-                return fieldTypeValue
+        fieldDescrWithType = next(filter(lambda fieldDescr: fieldDescr["fieldRole"] == 'roleType', fieldList))
+
+        fieldTypeValueAndMeaning = fieldDescrWithType["fieldValuesList"][0]
+        fieldTypeValue = fieldTypeValueAndMeaning["valueHex"]
+
+        return fieldTypeValue
 
 
     def fewFieldsOfUndefLengthHaveSeparator(self) -> bool:

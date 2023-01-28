@@ -3,7 +3,7 @@ import os
 import sys
 
 import PyQt5.Qt
-import PyQt5.QtGui.QIcon
+import PyQt5.QtGui
 
 import src.windows.windowProfileSelect as windowProfileSelect
 
