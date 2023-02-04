@@ -452,7 +452,7 @@ class WindowProfileEditor(windowProfiledWindow.WindowProfiledWindow):
     def addButtonRemoveDataline(self, hButtonLayout) -> None:
         buttonRemoveDataline = QPushButton(self)
         buttonRemoveDataline.setText(_('Remove dataline'))
-        buttonRemoveDataline.clicked.connect(self.onClickDelDataline)
+        buttonRemoveDataline.clicked.connect(self.onClickRemoveDataline)
 
         pixmap = QPixmap('../icons/trash.png')
         saveIcon = QIcon(pixmap)
@@ -538,7 +538,7 @@ class WindowProfileEditor(windowProfiledWindow.WindowProfiledWindow):
 
 
     @pyqtSlot()
-    def onClickDelDataline(self) -> None:
+    def onClickRemoveDataline(self) -> None:
         """
 
         :return:
@@ -547,6 +547,7 @@ class WindowProfileEditor(windowProfiledWindow.WindowProfiledWindow):
 
         # none selected - do nothing
         if len(indexes) <= 0:
+            print("No dataline to remove!")
             return
 
         firstRowToDel = indexes[0].row()

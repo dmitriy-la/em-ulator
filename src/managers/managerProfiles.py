@@ -25,6 +25,7 @@ class ManagerProfiles(object):
         self.profileFilePath = './__profiles__/' + profileTile + '/'
         self.msgFormatsFilePath = self.profileFilePath + 'msgFormats.json'
         self.datalineSettingsFilePath = self.profileFilePath + 'datalineSettings.json'
+
         self.generalProfileSettings = self.profileFilePath + 'profile.ini'
 
 
@@ -145,12 +146,12 @@ class ManagerProfiles(object):
 
         mask = ''
 
-        try:
+        if os.path.exists(self.datalineSettingsFilePath):
             with open(self.generalProfileSettings, 'r'):
                 config.read(self.generalProfileSettings)
                 mask = config.get('general_settings', 'mask_for_forming_receipt_type')
-        except IOError:
-            with open(self.generalProfileSettings, 'a') as configFile:
+        else:
+            with open(self.generalProfileSettings, 'a+') as configFile:
                 config.add_section('general_settings')
                 config.set('general_settings', 'mask_for_forming_receipt_type', '')
                 config.write(configFile)

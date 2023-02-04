@@ -1,8 +1,13 @@
 import json
+import os.path
+
+import src.managers.ioManager as ioManager
 
 
-class ManagerDatalineSettings(object):
+class ManagerDatalineSettings(ioManager.IoManager):
     def __init__(self, profileTitle='default'):
+        ioManager.IoManager.__init__(self)
+
         self.profileTitle = profileTitle
 
         self.datalineSettingsFilePath = './__profiles__/' + profileTitle + '/datalineSettings.json'
@@ -13,12 +18,13 @@ class ManagerDatalineSettings(object):
     def readDatalineSettingsList(self) -> list:
         datalineSettingsList = list()
 
-        try:
+        if os.path.exists(self.datalineSettingsFilePath):
             with open(self.datalineSettingsFilePath, 'r', newline='') as datalineListFile:
-                datalineSettingsList = json.load(datalineListFile)
-        except IOError:
-            with open(self.datalineSettingsFilePath, 'a') as datalineListFile:
-                json.dump(datalineSettingsList, datalineListFile, indent=4, ensure_ascii=False)
+                datalineSettingsList = self.loadJsonFile(datalineListFile)
+        else:
+            with open(self.datalineSettingsFilePath, 'a+') as datalineListFile:
+                self.dumpJsonFile(datalineListFile, datalineSettingsList)
+                # json.dump(datalineSettingsList, datalineListFile, indent=4, ensure_ascii=False)
 
         self.datalineDescrsList = datalineSettingsList
 
@@ -27,7 +33,8 @@ class ManagerDatalineSettings(object):
 
     def updateDatalineSettingsFile(self, datalineDescrsList: list) -> None:
         with open(self.datalineSettingsFilePath, 'w', newline='') as datalineListFile:
-            json.dump(datalineDescrsList, datalineListFile, indent=4, ensure_ascii=False)
+            self.dumpJsonFile(datalineListFile, datalineDescrsList)
+            # json.dump(datalineDescrsList, datalineListFile, indent=4, ensure_ascii=False)
 
 
     def getDatalineSettingsList(self) -> list:

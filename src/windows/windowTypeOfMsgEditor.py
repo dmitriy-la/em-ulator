@@ -383,11 +383,6 @@ class WindowTypeOfMsgEditor(windowProfiledWindow.WindowProfiledWindow):
 
 
     @pyqtSlot()
-    def onClickAddField(self):
-        self.addNewField()
-
-
-    @pyqtSlot()
     def onClickClearAllRows(self):
         rowCount = self.valueModel.rows
         self.valueModel.removeRows(0, rowCount)

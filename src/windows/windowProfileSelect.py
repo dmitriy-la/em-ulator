@@ -98,7 +98,7 @@ class WindowProfileSelect(QDialog):
     def addHBoxLayoutUpper(self, hBoxLayout) -> None:
         hBoxLayoutUpper = QHBoxLayout()
 
-        self.addButtonCreateProfile(hBoxLayoutUpper)
+        self.buttonCreateProfile = self.addButtonCreateProfile(hBoxLayoutUpper)
         self.comboBoxListWithProfiles = self.addComboBoxListWithProfiles()
         hBoxLayoutUpper.addWidget(self.comboBoxListWithProfiles)
         self.buttonEditProfile = self.addButtonEditProfile(hBoxLayoutUpper)
@@ -107,7 +107,7 @@ class WindowProfileSelect(QDialog):
         hBoxLayout.addLayout(hBoxLayoutUpper)
 
 
-    def addButtonCreateProfile(self, vBoxLayoutRight) -> None:
+    def addButtonCreateProfile(self, vBoxLayoutRight) -> QPushButton:
         buttonCreateProfile = QPushButton()
         buttonCreateProfile.setToolTip(_('Create new emulator profile'))
         buttonCreateProfile.clicked.connect(self.onClickCreateProfile)
@@ -119,6 +119,8 @@ class WindowProfileSelect(QDialog):
         buttonCreateProfile.setMaximumWidth(25)
 
         vBoxLayoutRight.addWidget(buttonCreateProfile)
+
+        return buttonCreateProfile
 
 
     def addButtonEditProfile(self, vBoxLayoutRight) -> QPushButton:
@@ -142,7 +144,7 @@ class WindowProfileSelect(QDialog):
     def addButtonRemoveProfile(self, vBoxLayoutRight) -> QPushButton:
         buttonRemoveProfile = QPushButton()
         buttonRemoveProfile.setToolTip(_('Remove emulator profile'))
-        buttonRemoveProfile.clicked.connect(self.onClickremoveProfile)
+        buttonRemoveProfile.clicked.connect(self.onClickRemoveProfile)
         buttonRemoveProfile.setEnabled(False)
 
         pixmap = QPixmap('../icons/trash.png')
@@ -186,7 +188,7 @@ class WindowProfileSelect(QDialog):
         profileTitle = ""
 
         while profileTitle == "":
-            text, ok = QInputDialog.getText(self, _('Profile title'), _('Enter profile title:'))
+            ok, text = self.getUserInput()
 
             profileTitle = str(text)
 
@@ -199,6 +201,11 @@ class WindowProfileSelect(QDialog):
                 profileManager.addEmptyProfile(profileTitle)
 
         return profileTitle
+
+
+    def getUserInput(self):
+        text, ok = QInputDialog.getText(self, _('Profile title'), _('Enter profile title:'))
+        return ok, text
 
 
     @pyqtSlot()
@@ -283,7 +290,7 @@ class WindowProfileSelect(QDialog):
 
 
     @pyqtSlot()
-    def onClickremoveProfile(self) -> None:
+    def onClickRemoveProfile(self) -> None:
         profileTitleToRemove = self.comboBoxListWithProfiles.currentText()
 
         if profileTitleToRemove == '':

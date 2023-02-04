@@ -411,9 +411,9 @@ class DataModelDataline(QAbstractTableModel):
         currentDatalineProtocol = currentDataline['protocolType']
 
         if index.column() == 9 and currentDatalineProtocol != "TCP-server":
-            return int(flags) & ~Qt.ItemIsEnabled
+            return flags & ~Qt.ItemIsEnabled
         else:
-            return int(flags) | Qt.ItemIsEditable
+            return flags | Qt.ItemIsEditable
 
 
     def insertRow(self, row, parent) -> bool:
@@ -451,7 +451,6 @@ class DataModelDataline(QAbstractTableModel):
             ipaddress.ip_address(address)
             return True
         except ValueError:
-            print('address/netmask is invalid:', address)
             return False
 
 
@@ -459,7 +458,7 @@ class DataModelDataline(QAbstractTableModel):
         try:
             socket.inet_pton(socket.AF_INET6, address)
         except socket.error:
-            print("Invalid address")
+            # print("Invalid address")
             return False
 
         return True
