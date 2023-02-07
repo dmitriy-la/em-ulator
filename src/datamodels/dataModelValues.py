@@ -139,7 +139,7 @@ class DataModelValues(QAbstractTableModel):
     def flags(self, index):
         flags = QAbstractTableModel.flags(self, index)
         if index.isValid():
-            return int(flags) | Qt.ItemIsEditable
+            return flags | Qt.ItemIsEditable
         else:
             return flags
 

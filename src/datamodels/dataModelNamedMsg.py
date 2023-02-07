@@ -171,9 +171,9 @@ class DataModelNamedMsg(QAbstractTableModel):
         flags = QAbstractTableModel.flags(self, index)
         if index.isValid():
             if index.column() == 0:
-                return int(flags) | Qt.ItemIsEditable
+                return flags | Qt.ItemIsEditable
             else:
-                return int(flags)
+                return flags
         else:
             return flags
 
