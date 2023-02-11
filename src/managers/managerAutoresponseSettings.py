@@ -92,12 +92,12 @@ class ManagerAutoresponseSettings(ioManager.IoManager):
         self.updateModesList(self.listOfAllAutorespModes)
 
 
-    def removeConditionFromConditionsList(self, condTitleToDelete: str) -> None:
-        for cond in self.conditionList:
-            if cond['condTitle'] == condTitleToDelete:
-                self.conditionList.remove(cond)
+    def removeConditionFromConditionsList(self, condTitleToRemove: str) -> None:
+        self._dataList = self.conditionList
 
-                self.updateConditionListFile(self.conditionList)
+        super()._removeItemFromDataListByValueInKey(condTitleToRemove, 'condTitle')
+
+        self.updateConditionListFile(self.conditionList)
 
 
     def updateConditionListFile(self, condList: list) -> None:
@@ -111,7 +111,8 @@ class ManagerAutoresponseSettings(ioManager.IoManager):
 
 
     def getAllActionTitlesList(self) -> list:
-        allActionTitlesList = [actionDescr["actionTitle"] for actionDescr in self.actionList]
+        allActionTitlesList = super()._getListOfAllValuesOfKeyInList("actionTitle", self.actionList)
+
         return allActionTitlesList
 
 
