@@ -1,37 +1,16 @@
-import json
+import src.managers.ioManager as ioManager
 
 
-class ManagerMsgFormats(object):
+class ManagerMsgFormats(ioManager.IoManager):
     def __init__(self, profileTitle='default'):
-        self.profileTitle = profileTitle
-        self.msgFormatsListFilePath = './__profiles__/' + profileTitle + '/msgFormats.json'
+        super().__init__(profileTitle)
 
-        self.listOfAllMsgTypeDescrs = self.readMsgFormatsList()
-
-
-    def readMsgFormatsList(self) -> list:
-        msgFormatsList = list()
-
-        try:
-            with open(self.msgFormatsListFilePath, 'r', newline='') as msgFormatsListFile:
-                msgFormatsList = json.load(msgFormatsListFile)
-        except IOError:
-            self.saveEmptyMsgFormatsFile()
-        except json.decoder.JSONDecodeError:
-            print("ERROR: error decoding formats file!")
-            self.saveEmptyMsgFormatsFile()
-
-        self.listOfAllMsgTypeDescrs = msgFormatsList
-
-        return msgFormatsList
+        self._dataListFilePath = self.getMsgFormatsFilePath()
+        self._dataList = self.readDataFromFile()
 
 
-    def saveEmptyMsgFormatsFile(self) -> None:
-        try:
-            with open(self.msgFormatsListFilePath, 'a') as msgFormatsListFile:
-                json.dump([], msgFormatsListFile, indent=4, ensure_ascii=False)
-        except IOError:
-            print("ERROR: profile not found!")
+    def getMsgFormatsFilePath(self) -> str:
+        return './__profiles__/' + self.profileTitle + '/msgFormats.json'
 
 
     def setCurrentProfile(self, newProfileTitle: str) -> None:
@@ -39,52 +18,33 @@ class ManagerMsgFormats(object):
 
 
     def addNewMsgType(self, newMsgTypeDict: dict) -> None:
-        self.listOfAllMsgTypeDescrs.append(newMsgTypeDict)
-        self.updateMsgFormatsFile()
+        self.addItemToDataList(newMsgTypeDict)
 
 
-    def removeMsgType(self, msgTypeTitle: str) -> bool:
-        for msgTypeDict in self.listOfAllMsgTypeDescrs:
-            if msgTypeDict['msgTypeTitle'] == msgTypeTitle:
-                self.listOfAllMsgTypeDescrs.remove(msgTypeDict)
-                self.updateMsgFormatsFile()
-                return True
-        return False
+    def removeMsgType(self, msgTypeTitle: str) -> None:
+        self._removeItemFromDataListByValueInKey(msgTypeTitle, 'msgTypeTitle')
 
 
     def updateMsgType(self, msgTypeDict: dict) -> None:
-        allTypesTitles = self.getListOfAllMsgTypeTitles()
-
-        if msgTypeDict["msgTypeTitle"] in allTypesTitles:
-            msgTypeIndex = allTypesTitles.index(msgTypeDict["msgTypeTitle"])
-            self.listOfAllMsgTypeDescrs.pop(msgTypeIndex)
-            self.listOfAllMsgTypeDescrs.insert(msgTypeIndex, msgTypeDict)
-        else:
-            self.listOfAllMsgTypeDescrs.append(msgTypeDict)
-
-        self.updateMsgFormatsFile()
-
-
-    def updateMsgFormatsFile(self) -> None:
-        with open(self.msgFormatsListFilePath, 'w', newline='') as formatsFile:
-            json.dump(self.listOfAllMsgTypeDescrs, formatsFile, indent=4, ensure_ascii=False)
+        self._replaceItemInDataListByKey(msgTypeDict, "msgTypeTitle")
 
 
     def updateAllFormatsFromAllMsgTypesList(self, allMsgTypesList: list) -> None:
-        self.listOfAllMsgTypeDescrs = allMsgTypesList
-        self.updateMsgFormatsFile()
+        self._dataList = allMsgTypesList
+        self.updateDataFile(self._dataList)
 
 
     def getListOfAllMsgTypeDescrs(self) -> list:
-        return self.listOfAllMsgTypeDescrs
+        return self._dataList
 
 
     def getInfoForMsgType(self, msgTypeTitle: str) -> dict:
-        for msgTypeDict in self.listOfAllMsgTypeDescrs:
-            if msgTypeDict['msgTypeTitle'] == msgTypeTitle:
-                return msgTypeDict
+        msgTypeDict = self._getItemByValueInKey(msgTypeTitle, "msgTypeTitle")
 
-        return {"msgTypeTitle": "undef"}
+        if not msgTypeDict:
+            msgTypeDict = {"msgTypeTitle": "undef"}
+
+        return msgTypeDict
 
 
     def getIfMsgTypeIsReceipt(self, msgTypeTitle: str) -> bool:
@@ -99,11 +59,12 @@ class ManagerMsgFormats(object):
 
 
     def getFieldDescrsListForMsgType(self, msgTypeTitle: str) -> list:
-        for msgTypeDict in self.listOfAllMsgTypeDescrs:
-            if msgTypeDict['msgTypeTitle'] == msgTypeTitle:
-                return msgTypeDict["fieldDescrsList"]
+        msgTypeDict = self._getItemByValueInKey(msgTypeTitle, 'msgTypeTitle')
 
-        return []
+        if not msgTypeDict:
+            return []
+        else:
+            return msgTypeDict["fieldDescrsList"]
 
 
     def getFieldInfoByFieldTitleInMsgType(self, fieldTitle: str, msgTypeTitle: str) -> dict:
@@ -162,15 +123,15 @@ class ManagerMsgFormats(object):
 
 
     def getInfoForReceiptMsg(self) -> dict:
-        for msgTypeDict in self.listOfAllMsgTypeDescrs:
-            if msgTypeDict['isReceipt']:
-                return msgTypeDict
+        msgTypeDict = self._getItemByValueInKey(True, 'isReceipt')
+
+        return msgTypeDict
 
 
     def getSeparatorForMsgType(self, msgTypeTitle: str) -> str:
-        for msgTypeDict in self.listOfAllMsgTypeDescrs:
-            if msgTypeDict['msgTypeTitle'] == msgTypeTitle:
-                return msgTypeDict['separator']
+        msgTypeDict = self._getItemByValueInKey(msgTypeTitle, 'msgTypeTitle')
+
+        return msgTypeDict['separator']
 
 
     def getBinSeparatorForMsgType(self, msgTypeTitle: str) -> str:
@@ -185,13 +146,14 @@ class ManagerMsgFormats(object):
 
 
     def getListOfAllMsgTypeTitles(self) -> list:
-        return [msgType["msgTypeTitle"] for msgType in self.listOfAllMsgTypeDescrs]
+        allMsgTypeTitles = self._getListOfAllValuesInKey("msgTypeTitle")
+        return allMsgTypeTitles
 
 
     def getListOfTypesValues(self) -> list:
         listOfTypesValues = []
 
-        for msgTypeDict in self.listOfAllMsgTypeDescrs:
+        for msgTypeDict in self._dataList:
             msgTypeTitle = msgTypeDict["msgTypeTitle"]
             indexOfFieldWithType = self.getIndexOfFieldWithRoleTypeInMsgType(msgTypeTitle)
             fieldDescrOfFieldWithType = msgTypeDict["fieldDescrsList"][indexOfFieldWithType]
@@ -207,7 +169,7 @@ class ManagerMsgFormats(object):
     def getIndexOfFieldWithRoleIdInMsgType(self, msgTypeTitle: str) -> int:
         fieldRole = "roleId"
 
-        fieldIndex = self.getIndexOfFieldWithSpecificRoleInMsgType(msgTypeTitle, fieldRole)
+        fieldIndex = self._getIndexOfFieldWithSpecificRoleInMsgType(msgTypeTitle, fieldRole)
 
         return fieldIndex
 
@@ -215,7 +177,7 @@ class ManagerMsgFormats(object):
     def getIndexOfFieldWithRoleLengthInMsgType(self, msgTypeTitle: str) -> int:
         fieldRole = "roleLength"
 
-        fieldIndex = self.getIndexOfFieldWithSpecificRoleInMsgType(msgTypeTitle, fieldRole)
+        fieldIndex = self._getIndexOfFieldWithSpecificRoleInMsgType(msgTypeTitle, fieldRole)
 
         return fieldIndex
 
@@ -223,7 +185,7 @@ class ManagerMsgFormats(object):
     def getIndexOfFieldWithRoleTypeInMsgType(self, msgTypeTitle: str) -> int:
         fieldRole = "roleType"
 
-        fieldIndex = self.getIndexOfFieldWithSpecificRoleInMsgType(msgTypeTitle, fieldRole)
+        fieldIndex = self._getIndexOfFieldWithSpecificRoleInMsgType(msgTypeTitle, fieldRole)
 
         return fieldIndex
 
@@ -231,22 +193,26 @@ class ManagerMsgFormats(object):
     def getIndexOfFieldWithRoleCrcInMsgType(self, msgTypeTitle: str) -> int:
         fieldRole = "roleCrc"
 
-        fieldIndex = self.getIndexOfFieldWithSpecificRoleInMsgType(msgTypeTitle, fieldRole)
+        fieldIndex = self._getIndexOfFieldWithSpecificRoleInMsgType(msgTypeTitle, fieldRole)
 
         return fieldIndex
 
 
-    def getIndexOfFieldWithSpecificRoleInMsgType(self, msgTypeTitle: str, fieldRole: str) -> int:
+    def _getIndexOfFieldWithSpecificRoleInMsgType(self, msgTypeTitle: str, fieldRole: str) -> int:
         msgDict = self.getInfoForMsgType(msgTypeTitle)
-
-        if msgDict["msgTypeTitle"] == "undef":
-            return None
 
         fieldDescrsList = msgDict["fieldDescrsList"]
 
+        fieldDescr = self._getFieldDescrByFieldRoleInFieldDescrsList(fieldRole, fieldDescrsList)
+        fieldIndex = fieldDescrsList.index(fieldDescr)
+
+        return fieldIndex
+
+
+    def _getFieldDescrByFieldRoleInFieldDescrsList(self, fieldRole: str, fieldDescrsList: list):
         for fieldIndex, fieldDescr in enumerate(fieldDescrsList):
             if fieldDescr["fieldRole"] == fieldRole:
-                return fieldIndex
+                return fieldDescr
 
 
     def getLengthOfFieldWithRoleCrcInMsgType(self, msgTypeTitle: str) -> int:
@@ -276,21 +242,18 @@ class ManagerMsgFormats(object):
     def getLengthOfFieldWithSpecificRoleInMsgType(self, msgTypeTitle: str, fieldRole: str) -> int:
         fieldDescrsList = self.getFieldDescrsListForMsgType(msgTypeTitle)
 
-        intFieldLength = 0
+        fieldDescr = self._getFieldDescrByFieldRoleInFieldDescrsList(fieldRole, fieldDescrsList)
 
-        for fieldIndex, fieldDescr in enumerate(fieldDescrsList):
-            if fieldDescr["fieldRole"] == fieldRole:
-                intFieldLength = int(fieldDescr["fieldLength"])
-                return intFieldLength
+        if fieldDescr is None:
+            intFieldLength = 0
+        else:
+            intFieldLength = int(fieldDescr["fieldLength"])
 
         return intFieldLength
 
 
     def getFieldIndexByTitleInMsgType(self, msgTypeTitle: str, fieldTitle: str) -> int:
         msgDict = self.getInfoForMsgType(msgTypeTitle)
-
-        if msgDict["msgTypeTitle"] == "undef":
-            return None
 
         fieldDescrsList = msgDict["fieldDescrsList"]
 
@@ -307,8 +270,8 @@ class ManagerMsgFormats(object):
 
         fieldDescrsList = msgDict["fieldDescrsList"]
 
-        msgFieldsLengthList = \
-            [int(fieldDescr["fieldLength"]) for fieldDescr in fieldDescrsList if fieldDescr["fieldLength"] != "undef."]
+        msgFieldsLengthList = self._getListOfAllValuesOfKeyInList("fieldLength", fieldDescrsList)
+        msgFieldsLengthList = list(filter(lambda fieldLen: fieldLen != "undef.", msgFieldsLengthList))
 
         return sum(msgFieldsLengthList)
 
@@ -376,7 +339,6 @@ class ManagerMsgFormats(object):
         else:
             lengthOfGroupedFields = indexOfLastFieldInGroup - indexOfFirstFieldInGroup
 
-
         return lengthOfGroupedFields
 
 
@@ -403,18 +365,12 @@ class ManagerMsgFormats(object):
 
 
     def thereIsMoreThanOneFieldOfUndefLengthInMsgType(self, msgTypeTitle: str) -> bool:
-        fieldDescrsList = self.getFieldDescrsListForMsgType(msgTypeTitle)
+        fieldLengthsList = self.getListOfAllFieldsLengthInMsgType(msgTypeTitle)
 
-        undefLengthFieldsCount = 0
-
-        for fieldDescr in fieldDescrsList:
-            if fieldDescr["fieldLength"] == 'undef.':
-                undefLengthFieldsCount += 1
-
-            if undefLengthFieldsCount > 1:
-                return True
-
-        return False
+        if fieldLengthsList.count('undef.') > 1:
+            return True
+        else:
+            return False
 
 
     def getBinLenOfFieldsAfterSingleUndefFieldInMsgType(self, msgTypeTitle: str) -> int:
@@ -440,7 +396,7 @@ class ManagerMsgFormats(object):
     def getListOfAllFieldsLengthInMsgType(self, msgTypeTitle: str) -> list:
         fieldDescrsList = self.getFieldDescrsListForMsgType(msgTypeTitle)
 
-        fieldLengthsList = [fieldDescr["fieldLength"] for fieldDescr in fieldDescrsList]
+        fieldLengthsList = self._getListOfAllValuesOfKeyInList("fieldLength", fieldDescrsList)
 
         return fieldLengthsList
 

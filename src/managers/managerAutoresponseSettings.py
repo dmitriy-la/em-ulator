@@ -1,91 +1,82 @@
-import json
+import src.managers.ioManager as ioManager
 
 
-class ManagerAutoresponseSettings(object):
+class ManagerAutoresponseSettings(ioManager.IoManager):
     def __init__(self, profileTitle: str):
-        self.profileTitle = profileTitle
+        super().__init__(profileTitle)
 
-        self.conditionListFilePath = './__profiles__/' + profileTitle + '/conditionList.json'
-        self.actionListFilePath = './__profiles__/' + profileTitle + '/actionList.json'
-        self.autorespModesFilePath = './__profiles__/' + profileTitle + '/autorespModes.json'
-
+        self.actionList = self.readActionListFromFile()
         self.conditionList = self.readConditionListFromFile()
-        self.actionDescrsList = self.readActionListFromFile()
         self.listOfAllAutorespModes = self.readAllAutorespModesListFromFile()
 
 
-    def readConditionListFromFile(self) -> list:
-        conditionList = list()
+    def readActionListFromFile(self) -> list:
+        actionListFilePath = self._getActionListFilePath()
 
-        try:
-            with open(self.conditionListFilePath, 'r', newline='', encoding='koi8-r') as condListFile:
-                conditionList = json.load(condListFile)
-        except IOError:
-            with open(self.conditionListFilePath, 'a') as condListFile:
-                json.dump([], condListFile, indent=4, ensure_ascii=False)
-        except json.decoder.JSONDecodeError:
-            with open(self.conditionListFilePath, 'a') as condListFile:
-                json.dump([], condListFile, indent=4, ensure_ascii=False)
+        actionList = self._readJsonFileByFilePath(actionListFilePath)
+
+        self.actionList = actionList
+
+        return actionList
+
+
+    def _getActionListFilePath(self):
+        actionListFilePath = './__profiles__/' + self.profileTitle + '/actionList.json'
+        return actionListFilePath
+
+
+    def readConditionListFromFile(self) -> list:
+        conditionListFilePath = self._getConditionListFilePath()
+
+        conditionList = self._readJsonFileByFilePath(conditionListFilePath)
 
         self.conditionList = conditionList
 
         return conditionList
 
 
-    def readActionListFromFile(self) -> list:
-        actionList = []
-
-        try:
-            with open(self.actionListFilePath, 'r', newline='', encoding='koi8-r') as actionListFile:
-                actionList = json.load(actionListFile)
-        except IOError:
-            with open(self.actionListFilePath, 'a') as actionListFile:
-                json.dump([], actionListFile, indent=4, ensure_ascii=False)
-        except json.decoder.JSONDecodeError:
-            with open(self.actionListFilePath, 'a') as actionListFile:
-                json.dump([], actionListFile, indent=4, ensure_ascii=False)
-
-        self.actionDescrsList = actionList
-
-        return actionList
+    def _getConditionListFilePath(self):
+        conditionListFilePath = './__profiles__/' + self.profileTitle + '/conditionList.json'
+        return conditionListFilePath
 
 
     def readAllAutorespModesListFromFile(self) -> list:
-        defaultModeDict = {"modeTitle": "initMode", "condList": []}
-        autorespModeslist = [defaultModeDict]
+        autorespModesFilePath = self._getAutorespModesFilePath()
 
-        try:
-            with open(self.autorespModesFilePath, 'r', newline='', encoding='koi8-r') as autorespModesFile:
-                autorespModeslist = json.load(autorespModesFile)
-        except IOError:
-            with open(self.autorespModesFilePath, 'a') as autorespModesFile:
-                json.dump([], autorespModesFile, indent=4, ensure_ascii=False)
-        except json.decoder.JSONDecodeError:
-            with open(self.autorespModesFilePath, 'a') as autorespModesFile:
-                json.dump([], autorespModesFile, indent=4, ensure_ascii=False)
+        autorespModeslist = self._readJsonFileByFilePath(autorespModesFilePath)
+
+        if not autorespModeslist:
+            defaultModeDict = {"modeTitle": "initMode", "condList": []}
+            autorespModeslist = [defaultModeDict]
 
         self.listOfAllAutorespModes = autorespModeslist
 
         return autorespModeslist
 
 
-    def getConditionList(self) -> list:
+    def _getAutorespModesFilePath(self):
+        autorespModesFilePath = './__profiles__/' + self.profileTitle + '/autorespModes.json'
+        return autorespModesFilePath
+
+
+    def getConditionDescrsList(self) -> list:
         return self.conditionList
 
 
     def getAllConditionTitlesList(self) -> list:
-        allConditionTitlesList = [condDescr["condTitle"] for condDescr in self.conditionList]
+        allConditionTitlesList = self._getListOfAllValuesInKey("condTitle")
         return allConditionTitlesList
 
 
     def addCondition(self, newConditionDict: dict) -> None:
-        self.conditionList.append(newConditionDict)
-        self.updateConditionListFile(self.conditionList)
+        self._dataList = self.conditionList
+
+        self.addItemToDataList(newConditionDict)
 
 
-    def removeCondition(self, condTitleToDelete: str) -> None:
-        self.removeConditionFromModesList(condTitleToDelete)
-        self.removeConditionFromConditionsList(condTitleToDelete)
+    def removeCondition(self, condTitleToRemove: str) -> None:
+        self.removeConditionFromModesList(condTitleToRemove)
+        self.removeConditionFromConditionsList(condTitleToRemove)
 
 
     def removeConditionFromModesList(self, condTitleToDelete: str) -> None:
@@ -110,73 +101,77 @@ class ManagerAutoresponseSettings(object):
 
 
     def updateConditionListFile(self, condList: list) -> None:
-        with open(self.conditionListFilePath, 'w', newline='', encoding='koi8-r') as condListFile:
-            json.dump(condList, condListFile, indent=4, ensure_ascii=False)
+        conditionListFilePath = self._getConditionListFilePath()
+
+        self._dumpDataToFile(condList, conditionListFilePath)
 
 
     def getActionDescrsList(self) -> list:
-        return self.actionDescrsList
+        return self.actionList
 
 
     def getAllActionTitlesList(self) -> list:
-        allActionTitlesList = [actionDescr["actionTitle"] for actionDescr in self.actionDescrsList]
+        allActionTitlesList = [actionDescr["actionTitle"] for actionDescr in self.actionList]
         return allActionTitlesList
 
 
     def addAction(self, newActionDict: dict) -> None:
-        self.actionDescrsList.append(newActionDict)
-        self.updateActionListFile(self.actionDescrsList)
+        self._dataList = self.actionList
+
+        self.addItemToDataList(newActionDict)
 
 
     def removeAction(self, actionTitleToDelete: str) -> None:
-        self.removeActionFromActionList(actionTitleToDelete)
-        self.removeActionFromModesList(actionTitleToDelete)
+        self._removeActionFromActionList(actionTitleToDelete)
+        self._removeActionFromModesList(actionTitleToDelete)
 
 
-    def removeActionFromActionList(self, actionTitleToDelete: str) -> None:
-        for action in self.actionDescrsList:
-            if action['actionTitle'] == actionTitleToDelete:
-                self.actionDescrsList.remove(action)
-                self.updateActionListFile(self.actionDescrsList)
+    def _removeActionFromActionList(self, actionTitleToRemove: str) -> None:
+        self._dataList = self.actionList
+
+        self._removeItemFromDataListByValueInKey(actionTitleToRemove, 'actionTitle')
+
+        self.updateActionListFile(self.actionList)
 
 
-    def removeActionFromModesList(self, actionTitleToDelete: str) -> None:
+    def _removeActionFromModesList(self, actionTitleToDelete: str) -> None:
         modeTitles = self.getListOfAutorespModesTitles()
 
         for mode in modeTitles:
-            self.removeActionFromMode(actionTitleToDelete, mode)
+            self._removeActionFromMode(actionTitleToDelete, mode)
 
         self.updateModesList(self.listOfAllAutorespModes)
 
 
-    def removeActionFromMode(self, actionTitleToDelete: str, modeTitle: str) -> None:
+    def _removeActionFromMode(self, actionTitleToDelete: str, modeTitle: str) -> None:
         condListMode = self.getCondListOfMode(modeTitle)
 
         for cond in condListMode:
             listOfAssignedActions = cond['actionsAssignedToCond']
-            self.removeActionFromCondition(actionTitleToDelete, listOfAssignedActions)
+            self._removeActionFromCondition(actionTitleToDelete, listOfAssignedActions)
 
 
-    def removeActionFromCondition(self, actionTitleToDelete: str, listOfAssignedActions: list) -> None:
+    def _removeActionFromCondition(self, actionTitleToDelete: str, listOfAssignedActions: list) -> None:
         for action in listOfAssignedActions:
             if action == actionTitleToDelete:
                 listOfAssignedActions.remove(action)
 
 
     def updateActionListFile(self, actionList: list) -> None:
-        with open(self.actionListFilePath, 'w', newline='', encoding='koi8-r') as actionListFile:
-            json.dump(actionList, actionListFile, indent=4, ensure_ascii=False)
+        actionListFilePath = self._getActionListFilePath()
+
+        self._dumpDataToFile(actionList, actionListFilePath)
 
 
     def getCondListOfMode(self, modeTitle: str) -> list:
-        condList = []
+        self._dataList = self.listOfAllAutorespModes
 
-        for mode in self.listOfAllAutorespModes:
-            if mode['modeTitle'] == modeTitle:
-                condList = mode['condList']
-                break
+        mode = self._getItemByValueInKey(modeTitle, 'modeTitle')
 
-        return condList
+        if mode is None:
+            return []
+        else:
+            return mode['condList']
 
 
     def getAllAutorespModesList(self) -> list:
@@ -184,22 +179,21 @@ class ManagerAutoresponseSettings(object):
 
 
     def getListOfAutorespModesTitles(self) -> list:
-        modeTitlesList = []
+        self._dataList = self.listOfAllAutorespModes
 
-        for mode in self.listOfAllAutorespModes:
-            modeTitlesList.append(mode['modeTitle'])
+        modeTitlesList = self._getListOfAllValuesInKey('modeTitle')
 
         return modeTitlesList
 
 
-    def removeModeFromAutorespModesList(self, modeTitleToDelete: str) -> None:
-        for mode in self.listOfAllAutorespModes:
-            if mode['modeTitle'] == modeTitleToDelete:
-                self.listOfAllAutorespModes.remove(mode)
-                self.updateModesList(self.listOfAllAutorespModes)
-                break
+    def removeModeFromAutorespModesList(self, modeTitleToRemove: str) -> None:
+        self._dataList = self.listOfAllAutorespModes
+
+        self._removeItemFromDataListByValueInKey(modeTitleToRemove, 'modeTitle')
+
+        self.updateModesList(self.listOfAllAutorespModes)
 
 
-    def updateModesList(self, modesList: list) -> None:
-        with open(self.autorespModesFilePath, 'w', newline='', encoding='koi8-r') as autorespModesFile:
-            json.dump(modesList, autorespModesFile, indent=4, ensure_ascii=False)
+    def updateModesList(self, newModesList: list):
+        autorespModesFilePath = self._getAutorespModesFilePath()
+        self._dumpDataToFile(newModesList, autorespModesFilePath)
