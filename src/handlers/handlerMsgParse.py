@@ -253,11 +253,13 @@ class HandlerMsgParse(object):
             if value == fieldValue:
                 return meaningStr
 
-        receiptMaskWasAppliedToType = (int(binFieldStr, 2) & int(self.maskForFormingReceiptType, 16) ==
-                                       int(self.maskForFormingReceiptType, 16))
-
-        if self.maskIsUsedForFormingReceiptType() and receiptMaskWasAppliedToType:
-            meaningStr = _('Receipt')
+        if self.maskIsUsedForFormingReceiptType():
+            receiptMaskWasAppliedToType = (int(binFieldStr, 2) & int(self.maskForFormingReceiptType, 16) ==
+                                           int(self.maskForFormingReceiptType, 16))
+            if receiptMaskWasAppliedToType:
+                meaningStr = _('Receipt')
+            else:
+                meaningStr = _('Unknown Value')
         else:
             meaningStr = _('Unknown Value')
 
@@ -559,82 +561,3 @@ class HandlerMsgParse(object):
             return True
         else:
             return False
-
-
-    # def addParsedInfoToGroupedMsgOfType(self, listOfBinFieldValues: list, msgTypeTitle: str) -> str:
-    #     """
-    #     This abomination doesn't work yet
-    #     :param binMsg:
-    #     :param msgType:
-    #     :return:
-    #     """
-    #     self.msgTypeDict = self.formatManager.getInfoForMsgType(msgType)
-    #     self.msgDescrsList = self.msgTypeDict["fieldDescrsList"]
-    #
-    #     separator = self.msgTypeDict["separator"]
-    #
-    #     msgCreator = self.handlerMsgCreator.HandlerMsgCreator(msgTypeTitle)
-    #     taleFieldsCount = msgCreator.getCountOfTaleFieldsForMsgWithGroupedFields()
-    #     indexOfStartFieldInGroup = msgCreator.getIndexOfFirstFieldInGroup()
-    #
-    #     indexOfEndFieldInGroup = msgCreator.getIndexOfLastFieldInGroup()
-    #
-    #     parsedMsgStr = ''
-    #
-    #     startBinStrFieldIndex = 0
-    #     endBinStrFieldIndex = 0
-    #
-    #     binMsg = binMsg.replace(' ', '')
-    #
-    #     currentFieldIndex = 0
-    #
-    #     while endBinStrFieldIndex < len(binMsg):
-    #         if currentFieldIndex == indexOfStartFieldInGroup:
-    #             parsedMsgStr += '\n              '
-    #
-    #         if currentFieldIndex == indexOfEndFieldInGroup + 1:
-    #             parsedMsgStr += '\n              '
-    #
-    #         # For groups
-    #         if currentFieldIndex > indexOfEndFieldInGroup and not self.indexOfTale(binMsg, endBinStrFieldIndex):
-    #             currentFieldIndex = msgCreator.adjustIndexForMsgWithGroupedFields(currentFieldIndex)
-    #
-    #         fieldDescr = self.msgDescrsList[currentFieldIndex]
-    #         fieldTitle = fieldDescr["fieldTitle"]
-    #
-    #         strHandler = handlerString.HandlerString()
-    #
-    #         if fieldDescr["fieldLength"] == 'undef.':
-    #             startHexStrFieldIndex = (startBinStrFieldIndex // 4) + currentFieldIndex
-    #
-    #             self.msgToParse = strHandler.restoreSpacesInHexMsg(self.msgToParse)
-    #
-    #             if separator == "":
-    #                 fieldLength = len(binMsg) - startBinStrFieldIndex - self.formatManager.getTotalBinLenOfTaleFieldsForMsgWithSingleUndefField()
-    #             else:
-    #                 fieldLength = 4 * self.getClosestSeparatorIndex(self.msgToParse[startHexStrFieldIndex: ], separator)
-    #                 self.msgToParse = self.msgToParse.replace(' ', '')
-    #         else:
-    #             fieldLength = int(fieldDescr["fieldLength"])
-    #
-    #         endBinStrFieldIndex += fieldLength
-    #
-    #         binFieldStr = binMsg[startBinStrFieldIndex : endBinStrFieldIndex]
-    #
-    #         hexFieldStr = '{:0{}X}'.format(int(binFieldStr, 2), fieldLength // 4)
-    #         parsedMsgStr += fieldTitle + ' = ' + hexFieldStr
-    #
-    #         parsedMsgStr += self.getMeaningStr(binFieldStr, fieldDescr)
-    #
-    #         if currentFieldIndex != len(self.msgDescrsList) - 1:
-    #             parsedMsgStr += ', '
-    #
-    #         startBinStrFieldIndex = endBinStrFieldIndex
-    #
-    #         if fieldDescr["fieldLength"] == 'undef.':
-    #             separatorLen = len(separator) * 8
-    #             startBinStrFieldIndex += separatorLen
-    #
-    #         currentFieldIndex += 1
-    #
-    #     return parsedMsgStr

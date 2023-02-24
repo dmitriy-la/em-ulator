@@ -20,14 +20,12 @@ class IoManager(object):
         datalineSettingsList = []
 
         if os.path.exists(datalineSettingsFilePath):
-            datalineSettingsList = self._readDataFromFile(datalineSettingsFilePath)
-        else:
-            self._createEmptyFile(datalineSettingsFilePath)
+            datalineSettingsList = self._readJsonFile(datalineSettingsFilePath)
 
         return datalineSettingsList
 
 
-    def _readDataFromFile(self, filePath: str):
+    def _readJsonFile(self, filePath: str):
         try:
             with open(filePath, 'r', newline='') as file:
                 dataList = json.load(file)
@@ -96,7 +94,7 @@ class IoManager(object):
 
 
     def _getListOfAllValuesOfKeyInList(self, key: str, list: list) -> list:
-        return [item[key] for item in list]
+        return [item.get(key) for item in list]
 
 
     def _getItemByValueInKey(self, value, key: str) -> dict:

@@ -5,14 +5,13 @@ from PyQt5.QtCore import Qt, QModelIndex, QPoint
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QApplication
 
-import src.windows.windowProfileSelect
-import src.windows.windowProfileEditor
+import src.ui.windows.windowProfileSelect
+import src.ui.windows.windowProfileEditor
 
 import src.managers.managerProfiles
-import src.managers.ioManager
 import src.managers.managerDatalineSettings
 
-TEST_PROFILE_STR = "test_profile_1"
+TEST_PROFILE_STR = "test_profile"
 
 
 def test_dataline_editor(mocker, mocker_dataline_settings_file_with_one_dataline):
@@ -26,7 +25,7 @@ def test_dataline_editor(mocker, mocker_dataline_settings_file_with_one_dataline
 
 
 def check_adding_dataline_to_dataline_editor(mocker_dataline_settings_file_with_one_dataline):
-    win_profile_editor = src.windows.windowProfileEditor.WindowProfileEditor(TEST_PROFILE_STR)
+    win_profile_editor = src.ui.windows.windowProfileEditor.WindowProfileEditor(TEST_PROFILE_STR)
 
     select_row_in_dataline_table(win_profile_editor, 0)
 
@@ -63,7 +62,7 @@ def select_row_in_dataline_table(win_profile_editor, row: int):
 
 
 def check_removing_dataline_from_dataline_editor(mocker_dataline_settings_file_with_one_dataline):
-    win_profile_editor = src.windows.windowProfileEditor.WindowProfileEditor(TEST_PROFILE_STR)
+    win_profile_editor = src.ui.windows.windowProfileEditor.WindowProfileEditor(TEST_PROFILE_STR)
 
     select_row_in_dataline_table(win_profile_editor, 0)
     win_profile_editor.onClickRemoveDataline()
@@ -88,7 +87,7 @@ def test_editing_ip(mocker, mocker_dataline_settings_file_with_one_dataline, col
     mocker.patch('src.managers.managerProfiles.ManagerProfiles.getMaskForFormingReceiptType', return_value="")
     mocker.patch('src.managers.managerMsgFormats.ManagerMsgFormats.getListOfAllMsgTypeTitles', return_value=[])
 
-    win_profile_editor = src.windows.windowProfileEditor.WindowProfileEditor(TEST_PROFILE_STR)
+    win_profile_editor = src.ui.windows.windowProfileEditor.WindowProfileEditor(TEST_PROFILE_STR)
 
     model = win_profile_editor.tableViewDataline.model()
 

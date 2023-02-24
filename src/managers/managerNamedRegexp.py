@@ -1,3 +1,5 @@
+import os
+
 import src.managers.ioManager as ioManager
 
 
@@ -8,6 +10,10 @@ class ManagerNamedRegexp(ioManager.IoManager):
     def __init__(self, profileTitle: str):
         super().__init__(profileTitle)
         self._dataListFilePath = './__profiles__/' + profileTitle + '/namedRegexpList.json'
+        self._dataList = super().readDataFromFile()
+
+        if not os.path.exists(self._dataListFilePath):
+            super()._createEmptyFile(self._dataListFilePath)
 
 
     def removeRegexpByTitle(self, regexpTitleToRemove: str) -> None:

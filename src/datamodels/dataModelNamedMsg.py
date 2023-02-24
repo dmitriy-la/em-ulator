@@ -157,7 +157,6 @@ class DataModelNamedMsg(QAbstractTableModel):
         return False
 
 
-
     def addNamedMsg(self, namedMsgDict: dict) -> None:
         self.rows += 1
 

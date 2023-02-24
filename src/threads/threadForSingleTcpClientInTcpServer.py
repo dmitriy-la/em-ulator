@@ -25,7 +25,7 @@ class ThreadForSingleTcpClientInTcpServer(threadNetworkBase.ThreadNetworkBase):
         while self.connected or self.receipting.stillWaitingReceipts():
             self.sendMsgIfNeeded()
             self.receiveAndProcessMsg()
-            self.msleep(1)
+            self.sleepConstantTime()
 
         self.stopThreadForSingleClient()
 

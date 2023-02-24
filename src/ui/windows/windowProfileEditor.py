@@ -10,14 +10,14 @@ from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QSpinBox, QSplitter,
 
 import src.datamodels.dataModelDataline as dataModelDataline
 import src.datamodels.dataModelMsgTypes as dataModelMsgTypes
-import src.delegates.delegateCheckBox as delegateCheckBox
-import src.delegates.delegateComboBox as delegateComboBox
+import src.ui.delegates.delegateCheckBox as delegateCheckBox
+import src.ui.delegates.delegateComboBox as delegateComboBox
 import src.managers.managerDatalineSettings as managerDatalineSettings
 import src.managers.managerMsgFormats as managerMsgFormats
 import src.managers.managerProfiles as managerProfiles
-import src.windows.windowAutorespModesEditor as windowAutorespModesEditor
-import src.windows.windowProfiledWindow as windowProfiledWindow
-import src.windows.windowTypeOfMsgEditor as windowTypeOfMsgEditor
+import src.ui.windows.windowAutorespModesEditor as windowAutorespModesEditor
+import src.ui.windows.windowProfiledWindow as windowProfiledWindow
+import src.ui.windows.windowTypeOfMsgEditor as windowTypeOfMsgEditor
 
 
 _ = gettext.gettext
@@ -595,7 +595,7 @@ class WindowProfileEditor(windowProfiledWindow.WindowProfiledWindow):
         :return:
         """
         datalineManager = managerDatalineSettings.ManagerDatalineSettings(self.profileTitle)
-        datalineManager.updateDatalineSettingsFile(self.datalineModel.datalineList)
+        datalineManager.updateDataFile(self.datalineModel.datalineList)
 
 
     @pyqtSlot()
@@ -604,7 +604,7 @@ class WindowProfileEditor(windowProfiledWindow.WindowProfiledWindow):
 
         :return:
         """
-        self.formatManager.readMsgFormatsList()
+        self.formatManager.readDataFromFile()
 
         allMsgTypes = self.formatManager.getListOfAllMsgTypeTitles()
 
@@ -628,7 +628,7 @@ class WindowProfileEditor(windowProfiledWindow.WindowProfiledWindow):
         :return:
         """
         datalineManager = managerDatalineSettings.ManagerDatalineSettings(self.profileTitle)
-        datalineList = datalineManager.getDatalineSettingsList()
+        datalineList = datalineManager.getDataList()
 
         self.typesOfMsgModel.msgTypesList.clear()
         self.typesOfMsgModel.removeRows(0, self.typesOfMsgModel.rows)

@@ -104,8 +104,8 @@ class DelegateCheckBox(QStyledItemDelegate):
         check_box_style_option = QStyleOptionButton()
         check_box_rect = QApplication.style().subElementRect(QStyle.SE_CheckBoxIndicator, check_box_style_option, None)
 
-        x = option.rect.x() + option.rect.width() / 2 - check_box_rect.width() / 2
-        y = option.rect.y() + option.rect.height() / 2 - check_box_rect.height() / 2
+        x = int(option.rect.x() + option.rect.width() / 2 - check_box_rect.width() / 2)
+        y = int(option.rect.y() + option.rect.height() / 2 - check_box_rect.height() / 2)
         check_box_point = QPoint(x, y)
 
         return QRect(check_box_point, check_box_rect.size())

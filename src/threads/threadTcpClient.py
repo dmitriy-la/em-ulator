@@ -32,22 +32,29 @@ class ThreadTcpClient(threadNetworkBase.ThreadNetworkBase):
     def run(self):
         self.initSockets()
 
-        while self.parent.running:
-            self.msleep(1)
+        while self.stillRunning():
+            self.sleepConstantTime()
             if self.connected:
-                self.sendMsgIfNeeded()
-
-                self.receiveAndProcessMsg()
+                super().sendMsgIfNeeded()
+                super().receiveAndProcessMsg()
             else:
                 self.connectingToServer(self.sendAddress)
         else:
+            print("Client stopped")
             self.receiptDelayTimersList.clear()
+
+
+    def stillRunning(self):
+        if self.parent is None:
+            return True
+        else:
+            return self.parent.running
 
 
     def connectingToServer(self, address: tuple) -> None:
         print("Connecting", address)
 
-        while self.parent.running and not self.connected:
+        while self.running and not self.connected:
             try:
                 self.closeSockets()
                 self.initSockets()
@@ -83,7 +90,7 @@ class ThreadTcpClient(threadNetworkBase.ThreadNetworkBase):
         self.connected = False
 
         if "Connect error" not in stateStrFull:
-            self.parent.addMsgToLogger('', stateStrFull + _(' in'))
+            super().addMsgToLogger('', stateStrFull + _(' in'))
 
         self.signalSetStateLabelError.emit(stateStrShort, stateStrFull)
 
@@ -92,8 +99,7 @@ class ThreadTcpClient(threadNetworkBase.ThreadNetworkBase):
 
     @pyqtSlot(str)
     def processToutAwaitingReceipt(self, msg: str) -> None:
-        self.parent.addMsgToLogger(msg, _('send failed (receipt timeout) from'))
-        self.msgToBeSentList.clear()
+        super().addMsgToLogger(msg, _('send failed (receipt timeout) from'))
 
         print("Restarting connection.")
         self.connected = False

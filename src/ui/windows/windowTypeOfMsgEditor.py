@@ -12,12 +12,12 @@ from PyQt5.QtWidgets import QInputDialog, QMessageBox
 
 import src.datamodels.dataModelMsgType as dataModelMsgType
 import src.datamodels.dataModelValues as dataModelValues
-import src.delegates.delegateCheckBox as delegateCheckBox
-import src.delegates.delegateComboBox as delegateComboBox
+import src.ui.delegates.delegateCheckBox as delegateCheckBox
+import src.ui.delegates.delegateComboBox as delegateComboBox
 import src.handlers.handlerMsgCreator as handlerMsgCreator
 import src.managers.managerMsgFormats as managerMsgFormats
-import src.windows.windowFieldEditor as windowFieldEditor
-import src.windows.windowProfiledWindow as windowProfiledWindow
+import src.ui.windows.windowFieldEditor as windowFieldEditor
+import src.ui.windows.windowProfiledWindow as windowProfiledWindow
 
 
 _ = gettext.gettext

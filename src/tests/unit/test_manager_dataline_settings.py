@@ -8,7 +8,7 @@ import src.managers.ioManager
 import src.managers.managerDatalineSettings
 
 
-TEST_PROFILE_STR = "test_profile_1"
+TEST_PROFILE_STR = "test_profile"
 
 dataline_title_1 = "serv"
 dataline_title_2 = "client"

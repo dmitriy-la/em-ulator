@@ -10,9 +10,9 @@ import src.handlers.handlerString as handlerString
 import src.managers.managerAutoresponseSettings as managerAutoresponseSettings
 import src.managers.managerNamedMsg as managerNamedMsg
 import src.managers.managerNamedRegexp as managerNamedRegexp
-import src.windows.windowNamedMsgEditor as windowNamedMsgEditor
-import src.windows.windowNamedRegexpEditor as windowNamedRegexpEditor
-import src.windows.windowProfiledWindow as windowProfiledWindow
+import src.ui.windows.windowNamedMsgEditor as windowNamedMsgEditor
+import src.ui.windows.windowNamedRegexpEditor as windowNamedRegexpEditor
+import src.ui.windows.windowProfiledWindow as windowProfiledWindow
 
 
 _ = gettext.gettext

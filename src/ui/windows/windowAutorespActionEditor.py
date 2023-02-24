@@ -10,8 +10,8 @@ from PyQt5.QtWidgets import QPushButton, QStackedWidget, QVBoxLayout
 import src.handlers.handlerString as handlerString
 import src.managers.managerAutoresponseSettings as managerAutoresponseSettings
 import src.managers.managerNamedMsg as managerNamedMsg
-import src.windows.windowNamedMsgEditor as windowNamedMsgEditor
-import src.windows.windowProfiledWindow as windowProfiledWindow
+import src.ui.windows.windowNamedMsgEditor as windowNamedMsgEditor
+import src.ui.windows.windowProfiledWindow as windowProfiledWindow
 
 
 _ = gettext.gettext

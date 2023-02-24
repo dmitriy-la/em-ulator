@@ -5,10 +5,13 @@ import socket
 from PyQt5.QtCore import QThread, pyqtSignal
 
 import src.handlers.handlerReceipting as handlerReceipting
+import src.handlers.handlerResponse as handlerResponse
 import src.threads.threadTimer as threadTimer
 
 
 _ = gettext.gettext
+
+THREAD_SLEEP_CONSTANT_MS = 1
 
 
 class ThreadNetworkBase(QThread):
@@ -18,8 +21,8 @@ class ThreadNetworkBase(QThread):
     def __init__(self, datalineSettings: dict, parent=None):
         QThread.__init__(self)
         self.parent = parent
-        self.datalineSettings = datalineSettings
 
+        self.datalineSettings = datalineSettings
         self.ownAddress = (datalineSettings["ipOwn"], datalineSettings["portOwn"])
         self.sendAddress = (datalineSettings["ipSend"], datalineSettings["portSend"])
 
@@ -30,15 +33,26 @@ class ThreadNetworkBase(QThread):
 
         self.receipting = self.getReceiptingModule()
 
-        self.msgToBeSentList = self.parent.msgToBeSentList
-
         self.receiptDelayTimersList = []
 
         self.msgForWhichWaitingReceipt = ''
 
         self.receiptDelayTimersList = []
 
-        self.sendMode = self.parent.sendMode
+        if self.parent is None:
+            print("NO PARENT")
+            # That means that we're in no-GUI mode, so app has to be terminated manually
+            self.msgToBeSentList = []
+            self.running = True
+            self.sendMode = 'parallel'
+            self.receiptOn = True
+            self.responseHandler = self.getResponseHandler()
+        else:
+            self.msgToBeSentList = self.parent.msgToBeSentList
+            self.running = self.parent.running
+            self.sendMode = self.parent.sendMode
+            self.receiptOn = self.parent.receiptOn
+            self.responseHandler = self.parent.responseHandler
 
         self.connected = False
 
@@ -55,6 +69,14 @@ class ThreadNetworkBase(QThread):
             self.receipting.signalToutAwaitingReceipt.connect(self.processToutAwaitingReceipt)
 
         return self.receipting
+
+
+    def getResponseHandler(self):
+        responseHandler = handlerResponse.HandlerResponse(self.profileTitle)
+        self.responseHandler.signalAddListOfMsgToSendingList.connect(self.addListOfMsgToSendingList)
+        self.msgToBeSentList = self.responseHandler.getListOfMsgToSendAtStart()
+
+        return responseHandler
 
 
     def closeSockets(self) -> None:
@@ -97,12 +119,12 @@ class ThreadNetworkBase(QThread):
 
     def sendAllMessages(self) -> None:
         for msgToSend in self.msgToBeSentList:
-            self.parent.responseManager.proccessMsgSent(msgToSend)
+            self.parent.responseHandler.proccessMsgSent(msgToSend)
             self.sendMsg(msgToSend)
 
 
     def sequentialSendMode(self) -> bool:
-        if self.parent.sendMode == 'sequential':
+        if self.sendMode == 'sequential':
             return True
         else:
             return False
@@ -120,7 +142,7 @@ class ThreadNetworkBase(QThread):
                 res = self.sendToSocket(msgHexBytes)
 
                 loggerCommentStr = self.getLoggerCommentStr(res)
-                self.parent.addMsgToLogger(msgToSend, loggerCommentStr)
+                self.addMsgToLogger(msgToSend, loggerCommentStr)
 
                 self.removeMsgFromSendingList(msgToSend)
 
@@ -200,7 +222,7 @@ class ThreadNetworkBase(QThread):
         lastSuccessfullySentMsg = self.receipting.listOfMsgsThatAwaitReceipts[0]["msgSent"]
 
         if self.msgForWhichWaitingReceipt != lastSuccessfullySentMsg:
-            self.parent.addMsgToLogger(lastSuccessfullySentMsg, _('no receipt for previously sent msg'))
+            self.addMsgToLogger(lastSuccessfullySentMsg, _('no receipt for previously sent msg'))
             self.msgForWhichWaitingReceipt = lastSuccessfullySentMsg
 
             self.removeMsgFromSendingList(lastSuccessfullySentMsg)
@@ -210,7 +232,7 @@ class ThreadNetworkBase(QThread):
         data = self.receiveMsg()
 
         if self.receivedValidData(data):
-            self.parent.addMsgToLogger(data, _('received in'))
+            self.addMsgToLogger(data, _('received in'))
 
             msgReceived = data
             self.addReceiptToSendingListIfNeeded(msgReceived)
@@ -250,14 +272,14 @@ class ThreadNetworkBase(QThread):
 
 
     def addListOfResponsesToSendingListIfNeeded(self, msgReceived: str) -> None:
-        listOfMsgAsResponse = self.parent.responseManager.proccessMsgReceived(msgReceived)
+        listOfMsgAsResponse = self.parent.responseHandler.proccessMsgReceived(msgReceived)
         self.parent.addListOfMsgToSendingList(listOfMsgAsResponse)
 
 
     def addReceiptToSendingListIfNeeded(self, msgReceived: str) -> None:
         receipt = self.receipting.proccessReceivedMsg(msgReceived)
 
-        if receipt != '' and self.parent.receiptOn:
+        if receipt != '' and self.receiptOn:
             timerArgs = [self.sendMsg, receipt, self.receipting.receiptDelay]
             receiptDelayTimer = threadTimer.ThreadTimer(*timerArgs)
             self.receiptDelayTimersList.append(receiptDelayTimer)
@@ -279,20 +301,33 @@ class ThreadNetworkBase(QThread):
 
 
     def setStateIndicatorError(self, error: str) -> None:
-        self.parent.labelNetStateCurrent.setText(error)
-        self.parent.labelNetStateCurrent.setStyleSheet('QLabel {background-color : red; }')
+        if self.parent is not None:
+            self.parent.labelNetStateCurrent.setText(error)
+            self.parent.labelNetStateCurrent.setStyleSheet('QLabel {background-color : red; }')
 
 
     def setStateIndicatorNorm(self) -> None:
-        self.parent.labelNetStateCurrent.setText(_('Norm'))
-        self.parent.labelNetStateCurrent.setStyleSheet('QLabel {background-color : limegreen; }')
+        if self.parent is not None:
+            self.parent.labelNetStateCurrent.setText(_('Norm'))
+            self.parent.labelNetStateCurrent.setStyleSheet('QLabel {background-color : limegreen; }')
 
 
     def processSocketError(self, stateStrShort: str, stateStrFull='') -> None:
         self.connected = False
 
-        self.parent.addMsgToLogger('', stateStrFull + _(" in"))
+        self.addMsgToLogger('', stateStrFull + _(" in"))
 
         self.signalSetStateLabelError.emit(stateStrShort, stateStrFull)
 
         print(stateStrFull)
+
+
+    def sleepConstantTime(self):
+        self.msleep(THREAD_SLEEP_CONSTANT_MS)
+
+
+    def addMsgToLogger(self, msg: str, comment: str):
+        if self.parent is not None:
+            self.parent.addMsgToLogger(msg, comment)
+        else:
+            print(msg, comment)

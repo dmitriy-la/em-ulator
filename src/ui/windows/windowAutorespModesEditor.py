@@ -10,9 +10,9 @@ from PyQt5.QtWidgets import QSplitter, QStackedWidget, QVBoxLayout
 
 import src.handlers.handlerString as handlerString
 import src.managers.managerAutoresponseSettings as managerAutoresponseSettings
-import src.windows.windowAutorespActionEditor as windowAutorespActionEditor
-import src.windows.windowAutorespConditionEditor as windowAutorespConditionEditor
-import src.windows.windowProfiledWindow as windowProfiledWindow
+import src.ui.windows.windowAutorespActionEditor as windowAutorespActionEditor
+import src.ui.windows.windowAutorespConditionEditor as windowAutorespConditionEditor
+import src.ui.windows.windowProfiledWindow as windowProfiledWindow
 
 
 _ = gettext.gettext
@@ -28,7 +28,7 @@ class WindowAutorespModesEditor(windowProfiledWindow.WindowProfiledWindow):
 
         self.listOfAllAutorespModes = self.managerAutorespSettings.getAllAutorespModesList()
 
-        self.allCondList = self.managerAutorespSettings.getConditionList()
+        self.allCondList = self.managerAutorespSettings.getConditionDescrsList()
 
         self.allActionTitlesList = self.managerAutorespSettings.getAllActionTitlesList()
 
@@ -334,7 +334,7 @@ class WindowAutorespModesEditor(windowProfiledWindow.WindowProfiledWindow):
 
 
     def fillAutorespModeInfoForCurrentMode(self) -> None:
-        condList = self.managerAutorespSettings.getConditionList()
+        condList = self.managerAutorespSettings.getConditionDescrsList()
 
         self.listWidgetConditions.clear()
         self.listConditionAndWidgetWithActions.clear()
@@ -375,7 +375,7 @@ class WindowAutorespModesEditor(windowProfiledWindow.WindowProfiledWindow):
 
 
     def getCondAndActionsList(self) -> list:
-        condList = self.managerAutorespSettings.getConditionList()
+        condList = self.managerAutorespSettings.getConditionDescrsList()
         condAndActionsList = []
 
         for cond in condList:
@@ -433,7 +433,7 @@ class WindowAutorespModesEditor(windowProfiledWindow.WindowProfiledWindow):
 
         inputDialogArguments = [_('Select action for removal'), _(" List of actions"), actionTitlesList, 0, False]
 
-        item, result = QInputDialog.getItem(self, *inputDialogArguments)
+        item, result = QInputDialog.getItem(QInputDialog(), *inputDialogArguments)
 
         actionTitleToDelete = ''
         if result:

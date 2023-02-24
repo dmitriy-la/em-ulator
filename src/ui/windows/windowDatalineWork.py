@@ -19,9 +19,9 @@ import src.managers.managerNamedMsg as managerNamedMsg
 import src.threads.threadTcpClient as threadTcpClient
 import src.threads.threadTcpServer as threadTcpServer
 import src.threads.threadUdp as threadUdp
-import src.windows.windowDatalineSettings as windowDatalineSettings
-import src.windows.windowNamedMsgEditor as windowNamedMsgEditor
-import src.windows.windowProfiledWindow as windowProfiledWindow
+import src.ui.windows.windowDatalineSettings as windowDatalineSettings
+import src.ui.windows.windowNamedMsgEditor as windowNamedMsgEditor
+import src.ui.windows.windowProfiledWindow as windowProfiledWindow
 
 
 _ = gettext.gettext
@@ -42,9 +42,9 @@ class WindowDatalineWork(windowProfiledWindow.WindowProfiledWindow):
 
         self.managerNamedMsg = managerNamedMsg.ManagerNamedMsg(self.profileTitle)
 
-        self.responseManager = handlerResponse.HandlerResponse(self.profileTitle)
-        self.responseManager.signalAddListOfMsgToSendingList.connect(self.addListOfMsgToSendingList)
-        self.msgToBeSentList = self.responseManager.getListOfMsgToSendAtStart()
+        self.responseHandler = handlerResponse.HandlerResponse(self.profileTitle)
+        self.responseHandler.signalAddListOfMsgToSendingList.connect(self.addListOfMsgToSendingList)
+        self.msgToBeSentList = self.responseHandler.getListOfMsgToSendAtStart()
 
         self.listClientThreads = []
         self.currentClientThread = 0
@@ -75,11 +75,9 @@ class WindowDatalineWork(windowProfiledWindow.WindowProfiledWindow):
 
 
     def addAllNamedMsgToDataModel(self) -> None:
-        allNamedMsgList = self.managerNamedMsg.getAllNamedMsgList()
+        allNamedMsgList = self.managerNamedMsg.getDataList()
 
-        for namedMsgRow in allNamedMsgList:
-            namedMsgDict = {"msgTitle": namedMsgRow["msgTitle"],
-                            "msgHex":   namedMsgRow["msgHex"]}
+        for namedMsgDict in allNamedMsgList:
             self.dataModelNamedMsgs.addNamedMsg(namedMsgDict)
 
 
@@ -441,7 +439,7 @@ class WindowDatalineWork(windowProfiledWindow.WindowProfiledWindow):
 
     def autofillIdAndCrcIfNeeded(self, msgToSend: str) -> str:
         if self.autofillId:
-            msgToSend = self.responseManager.setIdInOutgoingMsg(msgToSend)
+            msgToSend = self.responseHandler.setIdInOutgoingMsg(msgToSend)
             print("After id", msgToSend)
         if self.autofillCrc:
             crcHandler = handlerCrc.HandlerCrc(self.profileTitle)
@@ -627,7 +625,7 @@ class WindowDatalineWork(windowProfiledWindow.WindowProfiledWindow):
 
 
     def closeEvent(self, event) -> None:
-        print("Closing dataline")
+        print("Closing dataline", self.title)
 
         self.running = False
 
@@ -636,7 +634,7 @@ class WindowDatalineWork(windowProfiledWindow.WindowProfiledWindow):
             self.networkThread.wait()
 
         namedMsgList = self.dataModelNamedMsgs.namedMsgList
-        self.managerNamedMsg.updateNamedMsgListFile(namedMsgList)
+        self.managerNamedMsg.updateDataFile(namedMsgList)
 
         self.writeSettings()
 

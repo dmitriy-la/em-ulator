@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit
 from PyQt5.QtWidgets import QPushButton, QSpinBox, QVBoxLayout
 
 import src.managers.managerDatalineSettings as managerDatalineSettings
-import src.windows.windowProfiledWindow as windowProfiledWindow
+import src.ui.windows.windowProfiledWindow as windowProfiledWindow
 
 
 _ = gettext.gettext

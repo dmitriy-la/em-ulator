@@ -40,7 +40,6 @@ class ThreadTcpServer(QThread):
         while self.parent.running:
             if self.noClientsConnectedToServerAndTryingToSend():
                 self.proccessNoClientsWhenTryingToSend()
-
             try:
                 clientSocket, ip, port = self.getIncomingConnection()
 

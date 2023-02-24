@@ -23,29 +23,23 @@ class HandlerResponse(QObject):
         self.profileTitle = profileTitle
 
         self.msgParser = handlerMsgParse.HandlerMsgParse(self.profileTitle)
-        self.formatManager = managerMsgFormats.ManagerMsgFormats(self.profileTitle)
-        self.managerAutorespSettings = managerAutoresponseSettings.ManagerAutoresponseSettings(self.profileTitle)
-        self.managerNamedRegexp = managerNamedRegexp.ManagerNamedRegexp(self.profileTitle)
-        self.managerNamedMsg = managerNamedMsg.ManagerNamedMsg(self.profileTitle)
 
-        self.listOfAllAutorespModes = self.managerAutorespSettings.getAllAutorespModesList()
-        self.condDescrList = self.managerAutorespSettings.getConditionList()
-        self.actionDescrList = self.managerAutorespSettings.getActionDescrsList()
+        self.autorespSettingsManager = managerAutoresponseSettings.ManagerAutoresponseSettings(self.profileTitle)
+        self.formatManager = managerMsgFormats.ManagerMsgFormats(self.profileTitle)
+        self.namedMsgManager = managerNamedMsg.ManagerNamedMsg(self.profileTitle)
+        self.namedRegexpManager = managerNamedRegexp.ManagerNamedRegexp(self.profileTitle)
 
         self.msgReceived = ''
 
         self.currentAutorespModeTitle = DEFAULT_AUTORESPONSE_MODE_TITLE
-
-        self.listOfTimers = []
-
         self.currentAutorespModeData = self.getCurrentAutorespModeData(self.currentAutorespModeTitle)
 
         self.listOfRegexpAndReceiveFlagForNotedMsgs = []
-
         self.listOfRegexpAndReceiveFlagForNotedMsgs = self.getInitialListOfRegexpForNotedMsgs()
 
         self.outgoingMsgId = 0
 
+        self.listOfTimers = []
         self.startTimersAfterImitStart()
 
 
@@ -76,7 +70,7 @@ class HandlerResponse(QObject):
         condRegexpTitlesList = self.getCondRegexpTitlesListFromCondDescr(condDescr)
 
         for regexpTitle in condRegexpTitlesList:
-            regexp = self.managerNamedRegexp.getBinRegexpFromRegexpTitle(regexpTitle)
+            regexp = self.namedRegexpManager.getBinRegexpFromRegexpTitle(regexpTitle)
 
             if not self.regexpInListOfRegexpAndNotedMsgs(regexp):
                 regexpForNotedMsgDict = {"regexp": regexp, "msgNoted": False}
@@ -192,7 +186,9 @@ class HandlerResponse(QObject):
 
 
     def getCurrentAutorespModeData(self, curModeTitle: str) -> dict:
-        for mode in self.listOfAllAutorespModes:
+        listOfAllAutorespModes = self.autorespSettingsManager.getAllAutorespModesList()
+
+        for mode in listOfAllAutorespModes:
             if mode['modeTitle'] == curModeTitle:
                 return mode
 
@@ -234,7 +230,7 @@ class HandlerResponse(QObject):
         condRegexpTitlesList = condDescr["condRegexpTitlesList"]
 
         for msgRegexpTitle in condRegexpTitlesList:
-            msgRegexpBin = self.managerNamedRegexp.getBinRegexpFromRegexpTitle(msgRegexpTitle)
+            msgRegexpBin = self.namedRegexpManager.getBinRegexpFromRegexpTitle(msgRegexpTitle)
 
             if self.msgWasSentOrReceived(msgRegexpBin):
                 print("Starting timer")
@@ -374,7 +370,7 @@ class HandlerResponse(QObject):
             listOfResponsesForAction.append(msgReceivedWithFieldsAssigned)
         elif actionType == 'actionTypeRespondWithNamedMsg' or actionType == 'actionTypeRespondWithFewNamedMsg':
             listOfResponseTitles = actionDescr["listOfMsgToRespondWith"]
-            listOfResponsesForAction = list(map(self.managerNamedMsg.getHexStrByMsgTitle, listOfResponseTitles))
+            listOfResponsesForAction = list(map(self.namedMsgManager.getHexStrByMsgTitle, listOfResponseTitles))
 
         return listOfResponsesForAction
 
@@ -403,7 +399,9 @@ class HandlerResponse(QObject):
 
 
     def getActionDescrByTitle(self, actionTitle: str) -> dict:
-        for action in self.actionDescrList:
+        actionDescrsList = self.autorespSettingsManager.getActionDescrsList()
+
+        for action in actionDescrsList:
             if actionTitle == action['actionTitle']:
                 return action
 
@@ -459,7 +457,7 @@ class HandlerResponse(QObject):
 
         condRegexpTitlesList = condDescr["condRegexpTitlesList"]
         for regexpTitle in condRegexpTitlesList:
-            msgRegexp = self.managerNamedRegexp.getBinRegexpFromRegexpTitle(regexpTitle)
+            msgRegexp = self.namedRegexpManager.getBinRegexpFromRegexpTitle(regexpTitle)
 
             result = re.search(msgRegexp, binMsg)
 
@@ -505,7 +503,7 @@ class HandlerResponse(QObject):
 
         receivedMsgCounter = 0
         for regexpTitle in condRegexpTitlesList:
-            msgRegexp = self.managerNamedRegexp.getBinRegexpFromRegexpTitle(regexpTitle)
+            msgRegexp = self.namedRegexpManager.getBinRegexpFromRegexpTitle(regexpTitle)
 
             if self.msgWasReceived(msgRegexp):
                 receivedMsgCounter += 1
@@ -530,7 +528,7 @@ class HandlerResponse(QObject):
         condRegexpTitlesList = condDescr["condRegexpTitlesList"]
 
         regexpBinListToResetReceivedFlag = [
-            self.managerNamedRegexp.getBinRegexpFromRegexpTitle(regexpTitle) for regexpTitle in condRegexpTitlesList]
+            self.namedRegexpManager.getBinRegexpFromRegexpTitle(regexpTitle) for regexpTitle in condRegexpTitlesList]
 
         map(self.resetMsgNotedFlagIfNeeded, regexpBinListToResetReceivedFlag)
 
@@ -583,7 +581,7 @@ class HandlerResponse(QObject):
 
         regexpCounter = 0
         for regexpTitle in condRegexpTitlesList:
-            msgRegexp = self.managerNamedRegexp.getBinRegexpFromRegexpTitle(regexpTitle)
+            msgRegexp = self.namedRegexpManager.getBinRegexpFromRegexpTitle(regexpTitle)
             if self.msgWithRegexpWasReceived(msgRegexp):
                 regexpCounter += 1
 
@@ -612,14 +610,19 @@ class HandlerResponse(QObject):
 
 
     def getActionType(self, actionTitle: str) -> dict:
-        for actionDescr in self.actionDescrList:
+        actionDescrsList = self.autorespSettingsManager.getActionDescrsList()
+
+        for actionDescr in actionDescrsList:
             if actionDescr['actionTitle'] == actionTitle:
                 return actionDescr['actionType']
+
         return dict()
 
 
     def getCondDescrDictFromTitle(self, condTitle: str) -> dict:
-        for condDescr in self.condDescrList:
+        condDescrsList = self.autorespSettingsManager.getConditionDescrsList()
+
+        for condDescr in condDescrsList:
             if condDescr['condTitle'] == condTitle:
                 return condDescr
 

@@ -27,18 +27,18 @@ class ThreadUdp(threadNetworkBase.ThreadNetworkBase):
         self.rawMsgHandler = importlib.import_module('__profiles__.' + self.parent.profileTitle + '.handlerRawMsg')
 
         print("UDP Server listening", self.ownAddress)
-        self.setStateIndicatorNorm()
+        super().setStateIndicatorNorm()
 
 
     def run(self):
         self.initSockets()
 
-        while self.parent.running:
-            self.sendMsgIfNeeded()
+        while self.running:
+            super().sendMsgIfNeeded()
 
-            self.receiveAndProcessMsg()
+            super().receiveAndProcessMsg()
 
-            self.msleep(1)
+            self.sleepConstantTime()
 
         self.receiptDelayTimersList.clear()
 
@@ -73,4 +73,4 @@ class ThreadUdp(threadNetworkBase.ThreadNetworkBase):
 
     @pyqtSlot(str)
     def processToutAwaitingReceipt(self, msg: str) -> None:
-        self.parent.addMsgToLogger(msg, _('timeout awaiting receipt in'))
+        super().addMsgToLogger(msg, _('timeout awaiting receipt in'))

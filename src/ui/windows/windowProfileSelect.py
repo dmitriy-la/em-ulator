@@ -1,6 +1,7 @@
 import configparser
 import gettext
 import os
+import pathlib
 import sys
 
 from PyQt5.QtCore import QSize, pyqtSlot
@@ -10,9 +11,9 @@ from PyQt5.QtWidgets import QInputDialog, QMessageBox, QPushButton, QVBoxLayout
 
 import src.managers.managerDatalineSettings as managerDatalineSettings
 import src.managers.managerProfiles as managerProfiles
-import src.windows.windowDatalineWork as windowDatalineWork
-import src.windows.windowLogger as windowLogger
-import src.windows.windowProfileEditor as windowProfileEditor
+import src.ui.windows.windowDatalineWork as windowDatalineWork
+import src.ui.windows.windowLogger as windowLogger
+import src.ui.windows.windowProfileEditor as windowProfileEditor
 
 
 _ = gettext.gettext
@@ -188,7 +189,7 @@ class WindowProfileSelect(QDialog):
         profileTitle = ""
 
         while profileTitle == "":
-            ok, text = self.getUserInput()
+            text, ok = self.getUserInput()
 
             profileTitle = str(text)
 
@@ -205,7 +206,7 @@ class WindowProfileSelect(QDialog):
 
     def getUserInput(self):
         text, ok = QInputDialog.getText(self, _('Profile title'), _('Enter profile title:'))
-        return ok, text
+        return text, ok
 
 
     @pyqtSlot()
@@ -213,14 +214,50 @@ class WindowProfileSelect(QDialog):
         profileTitle = self.comboBoxListWithProfiles.currentText()
         print('Starting with profile', profileTitle)
 
-        self.startProfile(profileTitle)
+        if self.datalineSettingsFileExists(profileTitle) and self.msgFormatsFileExists(profileTitle):
+            self.startProfile(profileTitle)
+            self.close()
+        else:
+            print("Some necessery files are missing!")
 
-        self.close()
+
+    def datalineSettingsFileExists(self, profileTitle: str) -> bool:
+        datalineSettingsPathfile = './__profiles__/' + profileTitle + '/datalineSettings.json'
+
+        try:
+            with open(datalineSettingsPathfile, 'r'):
+                print("OK, found dataline settings file...")
+                return True
+        except IOError:
+            print(_('ERROR locating dataline settings file in: ') + str(pathlib.Path.cwd().resolve()) +
+                  _(', it should be in subfolder: ') + datalineSettingsPathfile[1:])
+            self.showErrorMessageBox(_('ERROR locating dataline settings file! Edit profile to repair.'))
+            return False
+
+
+    def msgFormatsFileExists(self, profileTitle: str) -> bool:
+        msgFormatsPathfile = './__profiles__/' + profileTitle + '/msgFormats.json'
+
+        try:
+            with open(msgFormatsPathfile, 'r'):
+                print("OK, found message formats file...")
+                return True
+        except IOError:
+            print(_('ERROR locating message formats file in: ') + str(pathlib.Path.cwd().resolve()) +
+                  _(', it should be in subfolder: ') + msgFormatsPathfile[1:])
+            self.showErrorMessageBox(_('ERROR locating message formats file! Edit profile to repair.'))
+            return False
 
 
     def startProfile(self, profileTitle):
         self.logger = windowLogger.WindowLogger(profileTitle)
+
         self.startAllDataline(profileTitle)
+
+        if not self.datalineList:
+            print(_("ERROR: dataline list is empty! Add some datalines in the profile editor. Terminating for now."))
+            self.showErrorMessageBox(_("ERROR: dataline list is empty!"), _("Add some datalines in the profile editor."))
+            sys.exit()
 
         if self.checkBoxSetProfileAsDefault.isChecked():
             self.setProfileAsDefault(profileTitle)
@@ -242,7 +279,7 @@ class WindowProfileSelect(QDialog):
 
     def getDatalineDescrList(self, profileTitle: str) -> list:
         datalineSettingsManager = managerDatalineSettings.ManagerDatalineSettings(profileTitle)
-        datalineList = datalineSettingsManager.getDatalineSettingsList()
+        datalineList = datalineSettingsManager.getDataList()
 
         return datalineList
 

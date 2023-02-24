@@ -431,7 +431,7 @@ class DataModelMsgType(QAbstractTableModel):
         return valueStr
 
 
-    def getFieldValue(self, index) -> dict:
+    def getFieldValue(self, index) -> str:
         field = self.fieldDescrList[index.column()]
         fieldValuesList = field["fieldValuesList"]
         fieldValueIndex = index.row() - NONE_VALUE_ROWS_COUNT

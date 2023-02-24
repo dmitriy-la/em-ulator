@@ -6,7 +6,7 @@ class ManagerMsgFormats(ioManager.IoManager):
         super().__init__(profileTitle)
 
         self._dataListFilePath = self.getMsgFormatsFilePath()
-        self._dataList = self.readDataFromFile()
+        self._dataList = super().readDataFromFile()
 
 
     def getMsgFormatsFilePath(self) -> str:
@@ -201,10 +201,11 @@ class ManagerMsgFormats(ioManager.IoManager):
     def _getIndexOfFieldWithSpecificRoleInMsgType(self, msgTypeTitle: str, fieldRole: str) -> int:
         msgDict = self.getInfoForMsgType(msgTypeTitle)
 
-        fieldDescrsList = msgDict["fieldDescrsList"]
+        fieldDescrsList = msgDict.get("fieldDescrsList")
 
-        fieldDescr = self._getFieldDescrByFieldRoleInFieldDescrsList(fieldRole, fieldDescrsList)
-        fieldIndex = fieldDescrsList.index(fieldDescr)
+        if fieldDescrsList is not None:
+            fieldDescr = self._getFieldDescrByFieldRoleInFieldDescrsList(fieldRole, fieldDescrsList)
+            fieldIndex = fieldDescrsList.index(fieldDescr)
 
         return fieldIndex
 
@@ -273,7 +274,9 @@ class ManagerMsgFormats(ioManager.IoManager):
         msgFieldsLengthList = self._getListOfAllValuesOfKeyInList("fieldLength", fieldDescrsList)
         msgFieldsLengthList = list(filter(lambda fieldLen: fieldLen != "undef.", msgFieldsLengthList))
 
-        return sum(msgFieldsLengthList)
+        msgFieldsIntLengthList = list(map(int, msgFieldsLengthList))
+
+        return sum(msgFieldsIntLengthList)
 
 
     def fieldIsFirstFieldInGroupInMsgType(self, fieldTitle: str, msgTypeTitle: str) -> bool:

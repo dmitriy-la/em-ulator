@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QTabBar, QTabWidget, QVBoxLayout, QWidget
 import src.handlers.handlerMsgCreator as handlerMsgCreator
 import src.handlers.handlerString as handlerString
 import src.managers.managerNamedRegexp as managerNamedRegexp
-import src.windows.windowProfiledWindow as windowProfiledWindow
+import src.ui.windows.windowProfiledWindow as windowProfiledWindow
 
 _ = gettext.gettext
 

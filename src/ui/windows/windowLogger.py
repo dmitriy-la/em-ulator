@@ -6,8 +6,8 @@ from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import QHBoxLayout, QPushButton, QSizeGrip
 from PyQt5.QtWidgets import QVBoxLayout, QWidget
 
-import src.widgets.textEditWithClearing as textEditWithClearing
-import src.windows.windowLoggerSettings as windowLoggerSettings
+import src.ui.widgets.textEditWithClearing as textEditWithClearing
+import src.ui.windows.windowLoggerSettings as windowLoggerSettings
 
 
 _ = gettext.gettext

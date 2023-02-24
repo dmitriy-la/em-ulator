@@ -9,8 +9,8 @@ from PyQt5.QtWidgets import QLineEdit, QPushButton, QRadioButton
 from PyQt5.QtWidgets import QSpinBox, QTableView, QVBoxLayout
 
 import src.datamodels.dataModelValues as dataModelValues
-import src.widgets.bigIntSpinBox as bigIntSpinBox
-import src.windows.windowProfiledWindow as windowProfiledWindow
+import src.ui.widgets.bigIntSpinBox as bigIntSpinBox
+import src.ui.windows.windowProfiledWindow as windowProfiledWindow
 
 _ = gettext.gettext
 

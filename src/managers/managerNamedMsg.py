@@ -1,3 +1,5 @@
+import os
+
 import src.managers.ioManager as ioManager
 
 
@@ -8,7 +10,10 @@ class ManagerNamedMsg(ioManager.IoManager):
     def __init__(self, profileTitle: str):
         super().__init__(profileTitle)
         self._dataListFilePath = './__profiles__/' + profileTitle + '/namedMsgList.json'
-        self._dataList = self.readDataFromFile()
+        self._dataList = super().readDataFromFile()
+
+        if not os.path.exists(self._dataListFilePath):
+            super()._createEmptyFile(self._dataListFilePath)
 
 
     def removeNamedMsg(self, msgTypeTitleToRemove: str) -> None:

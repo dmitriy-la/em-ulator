@@ -154,9 +154,12 @@ class HandlerString(object):
 
 
     def getBinFieldStrFromHexFieldStr(self, hexFieldStr: str) -> str:
-        if hexFieldStr == '([0-1]{8})*':
+        hexFieldStrIsOfUndefLengthAndUndefValue = (hexFieldStr == '([0-1]{8})*')
+        hexFieldStrIsOfFixedLengthButUndefValue = (hexFieldStr != '' and 'x' in hexFieldStr)
+
+        if hexFieldStrIsOfUndefLengthAndUndefValue:
             binFieldStr = '([0-1]{8})*'
-        elif hexFieldStr != '' and 'x' in hexFieldStr:
+        elif hexFieldStrIsOfFixedLengthButUndefValue:
             fieldLen = len(hexFieldStr) * 4
             binFieldStr = 'x' * fieldLen
         elif hexFieldStr != '':
@@ -169,26 +172,6 @@ class HandlerString(object):
         return binFieldStr
 
 
-    def saveIndexesOfSpacesInHexMsg(self, msgWithoutId: str) -> list:
-        self.listOfAllSpacesIndexes = [pos for pos, char in enumerate(msgWithoutId.strip(' ')) if char == ' ']
-        return self.listOfAllSpacesIndexes
-
-
-    def restoreSpacesInHexMsg(self, msg: str) -> str:
-        listOfStingToConcatIntoMsgWithSpaces = []
-        beginIndex = 0
-        for spaceIndex in self.listOfAllSpacesIndexes:
-            adjustedSpaceIndex = (spaceIndex - self.listOfAllSpacesIndexes.index(spaceIndex))
-            listOfStingToConcatIntoMsgWithSpaces.append(msg[beginIndex: adjustedSpaceIndex])
-            beginIndex = adjustedSpaceIndex
-
-        # Adding last field
-        listOfStingToConcatIntoMsgWithSpaces.append(msg[beginIndex:])
-        msgBinWithIdAndSpaces = ' '.join(listOfStingToConcatIntoMsgWithSpaces)
-
-        return msgBinWithIdAndSpaces
-
-
     def getListOfBinValuesFromListOfHexValues(self, hexList: list) -> list:
         binList = []
 
@@ -197,22 +180,6 @@ class HandlerString(object):
             binList.append(binFieldValue)
 
         return binList
-
-
-    def restoreSpacesInBinMsg(self, msgBinWithId: str) -> str:
-        listOfStingToConcatIntoMsgWithSpaces = []
-        beginIndex = 0
-
-        for spaceIndex in self.listOfAllSpacesIndexes:
-            adjustedSpaceIndex = (spaceIndex - self.listOfAllSpacesIndexes.index(spaceIndex)) * 4
-            listOfStingToConcatIntoMsgWithSpaces.append(msgBinWithId[beginIndex: adjustedSpaceIndex])
-            beginIndex = adjustedSpaceIndex
-
-        # Adding last field
-        listOfStingToConcatIntoMsgWithSpaces.append(msgBinWithId[beginIndex:])
-        msgBinWithIdAndSpaces = ' '.join(listOfStingToConcatIntoMsgWithSpaces)
-
-        return msgBinWithIdAndSpaces
 
 
     def getStrOrderedListFromList(self, listOfItems: list):
