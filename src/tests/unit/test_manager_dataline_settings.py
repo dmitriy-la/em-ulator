@@ -1,71 +1,16 @@
-import sys
-import pytest
 from unittest import mock
-
-from PyQt5.QtWidgets import QApplication
 
 import src.managers.ioManager
 import src.managers.managerDatalineSettings
-
+from src.tests.mockers.mocker_dataline_settings import dataline_title_1, dataline_title_2
+from src.tests.mockers.mocker_dataline_settings import initial_dataline_1_settings, initial_dataline_2_settings
+from src.tests.mockers.mocker_dataline_settings import initial_dataline_settings_list
+from src.tests.mockers.mocker_dataline_settings import mocker_dataline_settings_file_with_two_datalines
 
 TEST_PROFILE_STR = "test_profile"
 
-dataline_title_1 = "serv"
-dataline_title_2 = "client"
-str_initial_dataline_settings_list = """[{"title": "serv",
-                                "protocolType": "TCP-server",
-                                 "ipOwn": "127.0.0.1",
-                                 "portOwn": 2048,
-                                 "ipSend": "127.0.0.1",
-                                 "portSend": 2050,
-                                 "toutMs": 3000,
-                                 "repeats": 2,
-                                 "delay": 100,
-                                 "sendMode": "send to all clients"},
-                                {"title": "client",
-                                 "protocolType": "TCP-client",
-                                 "ipOwn": "127.0.0.1",
-                                 "portOwn": 2050,
-                                 "ipSend": "127.0.0.1",
-                                 "portSend": 2048,
-                                 "toutMs": 3000,
-                                 "repeats": 2,
-                                 "delay": 100,
-                                 "sendMode": "send to all clients"}]"""
-initial_dataline_1_settings = {"title": dataline_title_1,
-                                "protocolType": "TCP-server",
-                                 "ipOwn": "127.0.0.1",
-                                 "portOwn": 2048,
-                                 "ipSend": "127.0.0.1",
-                                 "portSend": 2050,
-                                 "toutMs": 3000,
-                                 "repeats": 2,
-                                 "delay": 100,
-                                 "sendMode": "send to all clients"}
-initial_dataline_2_settings = {"title": dataline_title_2,
-                                 "protocolType": "TCP-client",
-                                 "ipOwn": "127.0.0.1",
-                                 "portOwn": 2050,
-                                 "ipSend": "127.0.0.1",
-                                 "portSend": 2048,
-                                 "toutMs": 3000,
-                                 "repeats": 2,
-                                 "delay": 100,
-                                 "sendMode": "send to all clients"}
-initial_dataline_settings_list = [initial_dataline_1_settings,
-                                  initial_dataline_2_settings]
-@pytest.fixture
-def mocker_dataline_settings_file_with_two_datalines(mocker):
-    mock_dataline_file = mocker.mock_open(read_data=str_initial_dataline_settings_list)
-    builtin_open = "builtins.open"
-    mocker.patch(builtin_open, mock_dataline_file)
-
-    return mock_dataline_file
-
 
 def test_get_dataline_settings_by_dataline_title(mocker_dataline_settings_file_with_two_datalines):
-    test_app = QApplication(sys.argv)
-
     managerDatalineSettings = src.managers.managerDatalineSettings.ManagerDatalineSettings(TEST_PROFILE_STR)
     datalineDescr = managerDatalineSettings.getDatalineSettingsByDatalineTitle(dataline_title_1)
 
@@ -77,8 +22,6 @@ def test_get_dataline_settings_by_dataline_title(mocker_dataline_settings_file_w
 
 
 def test_get_all_dataline_settings():
-    test_app = QApplication(sys.argv)
-
     with mock.patch('src.managers.ioManager.IoManager.readDataFromFile') as dataline_settings_mock:
         dataline_settings_mock.return_value = initial_dataline_settings_list
 
@@ -102,8 +45,6 @@ editedDatalineDescr = {"title": edited_dataline_title,
 edited_dataline_settings_list = [initial_dataline_1_settings,
                                  editedDatalineDescr]
 def test_update_dataline_settings_of_single_dataline(mocker_dataline_settings_file_with_two_datalines):
-    test_app = QApplication(sys.argv)
-
     managerDatalineSettings = src.managers.managerDatalineSettings.ManagerDatalineSettings(TEST_PROFILE_STR)
     assert len(managerDatalineSettings._dataList) == 2
 

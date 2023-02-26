@@ -169,10 +169,12 @@ class ManagerAutoresponseSettings(ioManager.IoManager):
 
         mode = self._getItemByValueInKey(modeTitle, 'modeTitle')
 
-        if mode is None:
-            return []
-        else:
-            return mode['condList']
+        if mode is not None:
+            condList = mode.get('condList')
+            if condList is not None:
+                return condList
+
+        return []
 
 
     def getAllAutorespModesList(self) -> list:
@@ -193,6 +195,12 @@ class ManagerAutoresponseSettings(ioManager.IoManager):
         self._removeItemFromDataListByValueInKey(modeTitleToRemove, 'modeTitle')
 
         self.updateModesList(self.listOfAllAutorespModes)
+
+
+    def addMode(self, newMode: dict) -> None:
+        self._dataList = self.listOfAllAutorespModes
+
+        self.addItemToDataList(newMode)
 
 
     def updateModesList(self, newModesList: list):
